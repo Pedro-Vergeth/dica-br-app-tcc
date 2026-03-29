@@ -1,0 +1,145 @@
+import { StyleSheet } from "react-native";
+
+export const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: "#F4F7F1",
+  },
+  background: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  whitePanel: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    paddingHorizontal: 24,
+    paddingTop: 22,
+        // fontFamily: "Poppins-Bold", // Removed unsupported fontFamily
+    marginTop: 100,
+  },
+  header: {
+    gap: 8,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: "800",
+    color: "#1E1E1E",
+  },
+  subtitle: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: "#6A6A6A",
+    maxWidth: 330,
+  },
+  dropdownAnchor: {
+    position: "relative",
+    marginTop: 20,
+    alignItems: "center",
+  },
+  selectBox: {
+    width: "70%",
+    borderWidth: 2,
+    borderColor: "#01A33E",
+    borderRadius: 12,
+    minHeight: 44,
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  selectText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#01A33E",
+  },
+  selectTextSelected: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1E1E1E",
+  },
+  chevron: {
+    fontSize: 22,
+    lineHeight: 22,
+    color: "#01A33E",
+    marginTop: -2,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.45)",
+    justifyContent: "flex-end",
+  },
+  modalSheet: {
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingBottom: 24,
+    maxHeight: "72%",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#1E1E1E",
+    marginBottom: 12,
+  },
+  modalScroll: {
+    maxHeight: 360,
+  },
+  modalScrollContent: {
+    paddingBottom: 6,
+  },
+  modalItem: {
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5EFE5",
+  },
+  modalItemText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#1E1E1E",
+  },
+  mapBox: {
+    flex: 1,
+    minHeight: 220,
+    marginTop: 10,
+    marginBottom: 8,
+    borderRadius: 24,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  regionImage: {
+    width: "80%",
+    height: "80%",
+  },
+  button: {
+    marginTop: 0,
+    marginBottom: 90,
+    backgroundColor: "#4CAF50",
+    borderRadius: 12,
+    paddingVertical: 10,
+    alignItems: "center",
+    borderBottomWidth: 5,
+    borderBottomColor: "#196926",
+    shadowColor: "#196926",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  buttonText: {
+    paddingHorizontal: 8,
+    color: "#FFFFFF",
+    fontSize: 20,
+    fontFamily: "Poppins-Bold",
+  },
+});
