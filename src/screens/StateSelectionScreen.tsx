@@ -11,25 +11,51 @@ import {
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { useRouter } from "expo-router";
+
 import {
   getRegionImageByState,
   stateOptions,
   type StateOption,
 } from "../services/regionService";
+import {
+  loadSelectedState,
+  saveFirstAccessCompleted,
+  saveSelectedState,
+} from "../services/onboardingStorage";
 import { styles } from "../styles/StateSelectionScreenStyles";
 
 export default function StateSelectionScreen() {
+  const router = useRouter();
   const [popupVisible, setPopupVisible] = React.useState(false);
   const [selectedState, setSelectedState] = React.useState<StateOption | null>(null);
   const mapTransition = React.useRef(new Animated.Value(1)).current;
   const hasMounted = React.useRef(false);
 
   const sortedStateOptions = React.useMemo(
-    () => [...stateOptions].sort((left, right) => left.label.localeCompare(right.label, "pt-BR")),
+    () => [...stateOptions].sort((left, right) => left.state.localeCompare(right.state, "pt-BR")),
     []
   );
 
   const selectedRegionImage = getRegionImageByState(selectedState);
+
+  React.useEffect(() => {
+    let isMounted = true;
+
+    const hydrateSelectedState = async () => {
+      const storedState = await loadSelectedState();
+
+      if (isMounted) {
+        setSelectedState(storedState);
+      }
+    };
+
+    void hydrateSelectedState();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   React.useEffect(() => {
     if (!hasMounted.current) {
@@ -67,12 +93,9 @@ export default function StateSelectionScreen() {
             </View>
 
             <View style={styles.dropdownAnchor}>
-              <Pressable
-                style={styles.selectBox}
-                onPress={() => setPopupVisible(true)}
-              >
+              <Pressable style={styles.selectBox} onPress={() => setPopupVisible(true)}>
                 <Text style={selectedState ? styles.selectTextSelected : styles.selectText}>
-                  {selectedState ? selectedState.label : "Selecione seu estado"}
+                  {selectedState ? selectedState.state : "Selecione seu estado"}
                 </Text>
                 <Text style={styles.chevron}>⌄</Text>
               </Pressable>
@@ -99,7 +122,19 @@ export default function StateSelectionScreen() {
               />
             </View>
 
-            <Pressable style={styles.button}>
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                if (!selectedState) {
+                  setPopupVisible(true);
+                  return;
+                }
+
+                void saveSelectedState(selectedState);
+                void saveFirstAccessCompleted();
+                router.replace("/video");
+              }}
+            >
               <Text style={styles.buttonText}>Comece Aqui</Text>
             </Pressable>
           </View>
@@ -124,21 +159,22 @@ export default function StateSelectionScreen() {
             >
               {sortedStateOptions.map((item) => (
                 <Pressable
-                  key={item.value}
+                  key={item.sigla}
                   style={styles.modalItem}
                   onPress={() => {
                     setSelectedState(item);
                     setPopupVisible(false);
+                    void saveSelectedState(item);
+                    void saveFirstAccessCompleted();
                   }}
                 >
-                  <Text style={styles.modalItemText}>{item.label}</Text>
+                  <Text style={styles.modalItemText}>{item.state}</Text>
                 </Pressable>
               ))}
             </ScrollView>
           </View>
         </Pressable>
       </Modal>
-
     </View>
   );
 }
