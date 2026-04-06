@@ -94,7 +94,7 @@ export default function HomeScreen() {
           <View style={styles.gameCardContent}>
             <Text style={styles.gameCardTitle}>VEJA SE APRENDEU</Text>
             <Text style={styles.gameCardSubtitle}>Monte o seu Prato</Text>
-            <Pressable style={styles.gameButton} onPress={() => router.push("/game")}>
+            <Pressable style={styles.gameButton} onPress={() => router.push("/game-intro")}> 
               <Text style={styles.gameButtonText}>Começar</Text>
             </Pressable>
           </View>
@@ -119,7 +119,7 @@ export default function HomeScreen() {
             <Text style={styles.navLabel}>Receitas</Text>
           </Pressable>
 
-          <Pressable style={styles.navCenterButtonWrap} onPress={() => router.push("/game")}>
+          <Pressable style={styles.navCenterButtonWrap} onPress={() => router.push("/recipes")}> 
             <View style={styles.navCenterButton}>
               <Text style={styles.navCenterText}>IA</Text>
             </View>
