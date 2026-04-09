@@ -2,11 +2,21 @@ import React from "react";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
+import { useFonts } from "expo-font";
 
 import { styles } from "../styles/GameIntroScreenStyles";
 
 export default function GameIntroScreen() {
   const router = useRouter();
+  const [fontsLoaded] = useFonts({
+    "Poppins-Regular": require("../../assets/fonts/Poppins/Poppins-Regular.ttf"),
+    "Poppins-SemiBold": require("../../assets/fonts/Poppins/Poppins-SemiBold.ttf"),
+    "Poppins-Bold": require("../../assets/fonts/Poppins/Poppins-Bold.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <View style={styles.screen}>

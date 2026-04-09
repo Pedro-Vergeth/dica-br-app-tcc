@@ -3,30 +3,19 @@ import { Image, Pressable, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 
-import { loadSelectedState } from "../services/onboardingStorage";
 import { styles } from "../styles/HomeScreenStyles";
+
+function SearchIcon() {
+  return (
+    <View style={styles.searchIconWrap} pointerEvents="none">
+      <View style={styles.searchIconCircle} />
+      <View style={styles.searchIconHandle} />
+    </View>
+  );
+}
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [stateLabel, setStateLabel] = React.useState("Nenhum estado salvo");
-
-  React.useEffect(() => {
-    let isMounted = true;
-
-    const loadState = async () => {
-      const selectedState = await loadSelectedState();
-
-      if (isMounted && selectedState) {
-        setStateLabel(selectedState.state);
-      }
-    };
-
-    void loadState();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   return (
     <View style={styles.screen}>
@@ -94,45 +83,59 @@ export default function HomeScreen() {
           <View style={styles.gameCardContent}>
             <Text style={styles.gameCardTitle}>VEJA SE APRENDEU</Text>
             <Text style={styles.gameCardSubtitle}>Monte o seu Prato</Text>
-            <Pressable style={styles.gameButton} onPress={() => router.push("/game-intro")}> 
+            <Pressable style={styles.gameButton} onPress={() => router.push("/game-intro")}>
               <Text style={styles.gameButtonText}>Começar</Text>
             </Pressable>
           </View>
           <View style={styles.plateCircle} />
-        </View>
-
-        <View style={styles.statePill}>
-          <Text style={styles.statePillLabel}>Estado salvo</Text>
-          <Text style={styles.statePillValue}>{stateLabel}</Text>
         </View>
       </View>
 
       <View style={styles.bottomNav}>
         <View style={styles.bottomNavRow}>
           <Pressable style={styles.navItem} onPress={() => router.replace("/home")}>
-            <Text style={styles.navIcon}>⌂</Text>
+            <Image
+              source={require("../../assets/images/navbar/home.png")}
+              resizeMode="contain"
+              style={styles.navIconImage}
+            />
             <Text style={styles.navLabel}>Início</Text>
           </Pressable>
 
           <Pressable style={styles.navItem} onPress={() => router.push("/recipes")}>
-            <Text style={styles.navIcon}>🍴</Text>
+            <Image
+              source={require("../../assets/images/navbar/receitas.png")}
+              resizeMode="contain"
+              style={styles.navIconImage}
+            />
             <Text style={styles.navLabel}>Receitas</Text>
           </Pressable>
 
-          <Pressable style={styles.navCenterButtonWrap} onPress={() => router.push("/recipes")}> 
-            <View style={styles.navCenterButton}>
-              <Text style={styles.navCenterText}>IA</Text>
+          <Pressable style={styles.navCenterPressable} onPress={() => router.push("/recipes")}>
+            <View style={styles.navCenterGroup}>
+              <View style={styles.navCenterHalo} />
+              <View style={styles.navCenterButton}>
+                <SearchIcon />
+              </View>
+              <Text style={styles.navCenterLabel}>Pesquisar</Text>
             </View>
-            <Text style={styles.navLabel}>Pesquisar</Text>
           </Pressable>
 
           <Pressable style={styles.navItem} onPress={() => router.push("/library")}>
-            <Text style={styles.navIcon}>▤</Text>
+            <Image
+              source={require("../../assets/images/navbar/biblioteca.png")}
+              resizeMode="contain"
+              style={styles.navIconImage}
+            />
             <Text style={styles.navLabel}>Biblioteca</Text>
           </Pressable>
 
           <Pressable style={styles.navItem} onPress={() => router.push("/profile")}>
-            <Text style={styles.navIcon}>☺</Text>
+            <Image
+              source={require("../../assets/images/navbar/perfil.png")}
+              resizeMode="contain"
+              style={styles.navIconImage}
+            />
             <Text style={styles.navLabel}>Perfil</Text>
           </Pressable>
         </View>
