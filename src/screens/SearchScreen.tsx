@@ -1,7 +1,7 @@
 import React from "react";
 import { Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { SearchIcon as NavbarSearchIcon } from "../components/NavbarIcons";
@@ -64,11 +64,20 @@ function SearchResultCard({
 
 export default function SearchScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ query?: string | string[] }>();
   const [query, setQuery] = React.useState("");
   const [results, setResults] = React.useState<SearchResultItem[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [searched, setSearched] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const routeQuery = Array.isArray(params.query) ? params.query[0] : params.query;
+
+    if (typeof routeQuery === "string" && routeQuery.trim() && routeQuery !== query) {
+      setQuery(routeQuery);
+    }
+  }, [params.query, query]);
 
   const runSearch = React.useCallback(async (searchValue: string) => {
     const normalizedSearch = searchValue.trim();
@@ -157,7 +166,7 @@ export default function SearchScreen() {
             />
           </View>
 
-          <Pressable accessibilityRole="button" style={styles.cameraButton} onPress={() => {}}>
+          <Pressable accessibilityRole="button" style={styles.cameraButton} onPress={() => router.push("/camera-capture")}>
             <CameraButton />
           </Pressable>
         </View>

@@ -30,6 +30,12 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permita o uso da câmera para reconhecer alimentos por foto."
+        }
+      ],
       "expo-video",
       "expo-sqlite"
     ]
