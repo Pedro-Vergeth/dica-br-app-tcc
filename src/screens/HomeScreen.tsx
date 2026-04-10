@@ -28,6 +28,7 @@ export default function HomeScreen() {
             resizeMode="contain"
             style={styles.logoImage}
           />
+          <View pointerEvents="none" style={styles.logoRowBottomShadow} />
         </View>
 
         <View style={styles.sectionHeader}>
@@ -111,7 +112,7 @@ export default function HomeScreen() {
             <Text style={styles.navLabel}>Receitas</Text>
           </Pressable>
 
-          <Pressable style={styles.navCenterPressable} onPress={() => router.push("/recipes")}>
+          <Pressable style={styles.navCenterPressable} onPress={() => router.push("/search")}>
             <View style={styles.navCenterGroup}>
               <View style={styles.navCenterHalo} />
               <View style={styles.navCenterButton}>

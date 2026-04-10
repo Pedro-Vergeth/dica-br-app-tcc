@@ -2,29 +2,66 @@ import React from "react";
 import { Image, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, Text, UIManager, useWindowDimensions, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
+import { fetchGameFoods } from "../services/gameFoodService";
 import { styles } from "../styles/GameScreenStyles";
+import Svg, { Path, Text as SvgText, TextPath } from "react-native-svg";
 
 const BOARD_DESIGN_WIDTH = 346;
 const BOARD_DESIGN_HEIGHT = 313.563;
 const PLATE_DESIGN_SIZE = 280;
 const FOOD_SIZE = 48;
 const FOOD_GAP = 12;
-const TRAY_ITEM_WIDTH = 54;
-const TRAY_ITEM_HEIGHT = 66;
-const TRAY_TILE_SIZE = 48;
-const TRAY_ITEM_SPACING = 12;
-
-const foodTray = [
-  { id: "banana", label: "Banana", group: "yellow" as const, color: "#F7C300" },
-  { id: "bread", label: "Pão francês", group: "yellow" as const, color: "#E0B370" },
-  { id: "butter", label: "Manteiga", group: "yellow" as const, color: "#F4E091" },
-  { id: "honey", label: "Mel", group: "yellow" as const, color: "#D28D38" },
-  { id: "oats", label: "Aveia", group: "yellow" as const, color: "#B8865A" },
-  { id: "broccoli", label: "Brócolis", group: "green" as const, color: "#4BB05B" },
-  { id: "fish", label: "Peixe", group: "blue" as const, color: "#0F5F9A" },
-] as const;
+const TRAY_ITEM_WIDTH = 74;
+const TRAY_ITEM_HEIGHT = 92;
+const TRAY_TILE_SIZE = 64;
+const TRAY_ITEM_SPACING = 16;
 
 type ZoneKey = "blue" | "yellow" | "green";
+
+type TrayFoodItem = {
+  id: string;
+  nomePrincipal: string;
+  grupoAlimentar: string;
+  imagem64: string;
+  imageUri: string;
+  color: string;
+};
+
+const zoneColors: Record<ZoneKey, string> = {
+  blue: "#0F5F9A",
+  yellow: "#F7C300",
+  green: "#4BB05B",
+};
+
+function toZoneKey(grupoAlimentar: string): ZoneKey | null {
+  const normalized = grupoAlimentar.trim().toUpperCase();
+
+  if (normalized === "AZUL") {
+    return "blue";
+  }
+
+  if (normalized === "AMARELO") {
+    return "yellow";
+  }
+
+  if (normalized === "VERDE") {
+    return "green";
+  }
+
+  return null;
+}
+
+function toImageUri(imagem64: string) {
+  if (imagem64.startsWith("data:")) {
+    return imagem64;
+  }
+
+  if (imagem64.startsWith("http://") || imagem64.startsWith("https://")) {
+    return imagem64;
+  }
+
+  return `data:image/png;base64,${imagem64}`;
+}
 
 type ZoneLayout = {
   x: number;
@@ -40,28 +77,71 @@ type PlacedItem = {
 };
 
 function ArcLabel({ text }: { text: string }) {
+  const arcId = React.useId().replace(/:/g, "");
+
   return (
-    <View style={styles.foodLabelArcWrap}>
-      <Text style={styles.foodLabelArcFallback}>{text}</Text>
-    </View>
+    <Svg width={100} height={30} viewBox="0 0 95 8" style={styles.foodLabelArcWrap}>
+      <Path id={arcId} d="M 0 46 A 46 46 0 0 1 92 46" fill="none" />
+      <SvgText fill="#1F1F1F" fontSize="14" fontWeight="700" fontFamily="Poppins-Bold" textAnchor="middle">
+        <TextPath href={`#${arcId}`} startOffset="50%">
+          {text}
+        </TextPath>
+      </SvgText>
+    </Svg>
   );
 }
 
 function FoodToken({
   label,
   color,
+  imageUri,
   size = TRAY_TILE_SIZE,
   showLabel = true,
 }: {
   label: string;
   color: string;
+  imageUri?: string;
   size?: number;
   showLabel?: boolean;
 }) {
+  const visualSize = size * 1.12;
+  const borderRadius = visualSize / 2;
+  const imageSize = visualSize * 1.06;
+  const imageTopOffset = -(visualSize * 0.11);
+  const imageLeftOffset = -(visualSize * 0.03);
+
   return (
     <View style={styles.foodTokenWrap}>
-      {showLabel ? <ArcLabel text={label} /> : null}
-      <View style={[styles.foodTile, { backgroundColor: color, width: size, height: size, borderRadius: size / 2 }]} />
+      {showLabel ? (
+        <ArcLabel text={label} />
+      ) : null}
+      <View
+        style={[
+          styles.foodTile,
+          {
+            backgroundColor: color,
+            width: visualSize,
+            height: visualSize,
+            borderRadius,
+            marginTop: 0,
+          },
+        ]}
+      >
+        {imageUri ? (
+          <Image
+            source={{ uri: imageUri }}
+            resizeMode="cover"
+            style={{
+              position: "absolute",
+              top: imageTopOffset,
+              left: imageLeftOffset,
+              width: imageSize,
+              height: imageSize,
+              borderRadius,
+            }}
+          />
+        ) : null}
+      </View>
     </View>
   );
 }
@@ -81,7 +161,7 @@ function DraggableFood({
   onDragEnd,
   onPlaced,
 }: {
-  item: (typeof foodTray)[number];
+  item: TrayFoodItem;
   originX: number;
   originY: number;
   zoneLayouts: Record<ZoneKey, ZoneLayout>;
@@ -103,7 +183,8 @@ function DraggableFood({
           onDragMove(item.id, originX + gestureState.dx, originY + gestureState.dy);
         },
         onPanResponderRelease: (_event, gestureState) => {
-          const zone = zoneLayouts[item.group];
+          const zoneKey = toZoneKey(item.grupoAlimentar) ?? "yellow";
+          const zone = zoneLayouts[zoneKey];
 
           // Usamos a posição exata do dedo na tela (moveX/moveY) para a colisão
           // Isso funciona mesmo se o ScrollView tiver rolado!
@@ -116,13 +197,13 @@ function DraggableFood({
             const targetY = zone.y + zone.height / 2 - FOOD_SIZE / 2;
             
             // Avisa a tela principal que acertou e onde deve prender
-            onPlaced(item.id, targetX, targetY, item.group);
+            onPlaced(item.id, targetX, targetY, zoneKey);
           }
 
           onDragEnd(item.id);
         },
       }),
-    [item.group, item.id, onDragEnd, onDragMove, onDragStart, onPlaced, originX, originY, zoneLayouts],
+    [item.grupoAlimentar, item.id, onDragEnd, onDragMove, onDragStart, onPlaced, originX, originY, zoneLayouts],
   );
 
   return (
@@ -137,7 +218,7 @@ function DraggableFood({
         },
       ]}
     >
-      <FoodToken label={item.label} color={item.color} />
+      <FoodToken label={item.nomePrincipal} color={item.color} imageUri={item.imageUri} />
     </View>
   );
 }
@@ -148,10 +229,73 @@ export default function GameScreen() {
   const scaleX = React.useCallback((value: number) => (value * width) / 402, [width]);
   const scaleY = React.useCallback((value: number) => (value * height) / 874, [height]);
 
+  const [foodTray, setFoodTray] = React.useState<TrayFoodItem[]>([]);
+  const [foodsLoaded, setFoodsLoaded] = React.useState(false);
+  const [foodsError, setFoodsError] = React.useState<string | null>(null);
+
   React.useEffect(() => {
     if (Platform.OS === "android") {
       UIManager.setLayoutAnimationEnabledExperimental?.(true);
     }
+  }, []);
+
+  React.useEffect(() => {
+    let cancelled = false;
+
+    async function loadFoods() {
+      console.log("[GameScreen] loading foods from API");
+
+      try {
+        const payload = await fetchGameFoods();
+
+        if (cancelled) {
+          return;
+        }
+
+        console.log("[GameScreen] foods received", payload.length);
+
+        const normalizedFoods = payload.map((item, index) => {
+          const zoneKey = toZoneKey(item.grupoAlimentar);
+
+          if (!zoneKey) {
+            console.log("[GameScreen] item without valid zone", item);
+            return null;
+          }
+
+          return {
+            id: `${item.nomePrincipal}-${index}`,
+            nomePrincipal: item.nomePrincipal,
+            grupoAlimentar: item.grupoAlimentar,
+            imagem64: item.imagem64,
+            imageUri: toImageUri(item.imagem64),
+            color: zoneColors[zoneKey],
+          } satisfies TrayFoodItem;
+        }).filter((item): item is TrayFoodItem => Boolean(item));
+
+        console.log("[GameScreen] foods rendered after normalization", normalizedFoods.length);
+        setFoodTray(normalizedFoods);
+        setFoodsError(null);
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+
+        console.log("[GameScreen] failed to load foods from API", error);
+        setFoodTray([]);
+        setFoodsError(error instanceof Error ? error.message : "Não foi possível carregar os alimentos da API.");
+      } finally {
+        if (!cancelled) {
+          console.log("[GameScreen] foods loading finished");
+          setFoodsLoaded(true);
+        }
+      }
+    }
+
+    void loadFoods();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const boardWidth = scaleX(BOARD_DESIGN_WIDTH);
@@ -162,7 +306,7 @@ export default function GameScreen() {
   const trayLeft = scaleX(32);
   const trayTop = scaleY(177);
   const trayWidth = width + scaleX(33);
-  const trayHeight = scaleY(85);
+  const trayHeight = scaleY(112);
   const trayHorizontalPadding = 18;
   const trayVerticalOffset = (trayHeight - TRAY_ITEM_HEIGHT) / 2;
 
@@ -200,7 +344,7 @@ export default function GameScreen() {
   const [placedItems, setPlacedItems] = React.useState<Record<string, PlacedItem>>({});
   const [placedOrder, setPlacedOrder] = React.useState<string[]>([]);
 
-  const visibleTrayItems = React.useMemo(() => foodTray.filter((item) => !placedItems[item.id]), [placedItems]);
+  const visibleTrayItems = React.useMemo(() => foodTray.filter((item) => !placedItems[item.id]), [foodTray, placedItems]);
 
   const handlePlaced = React.useCallback((itemId: string, x: number, y: number, zone: ZoneKey) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -208,7 +352,7 @@ export default function GameScreen() {
     setPlacedOrder((current) => (current.includes(itemId) ? current : [...current, itemId]));
   }, []);
 
-  const allPlaced = Object.keys(placedItems).length === foodTray.length;
+  const allPlaced = foodTray.length > 0 && Object.keys(placedItems).length === foodTray.length;
   const [activeDrag, setActiveDrag] = React.useState<{
     itemId: string;
     x: number;
@@ -318,12 +462,12 @@ export default function GameScreen() {
             >
             {visibleTrayItems.map((item, index) => {
               const measuredLayout = trayItemLayouts[item.id];
-              const originX = measuredLayout ? trayLeft + measuredLayout.x - trayScrollX : trayLeft + trayHorizontalPadding + index * (TRAY_ITEM_WIDTH + FOOD_GAP) - trayScrollX;
+              const originX = measuredLayout ? trayLeft + measuredLayout.x - trayScrollX : trayLeft + trayHorizontalPadding + index * (TRAY_ITEM_WIDTH + TRAY_ITEM_SPACING) - trayScrollX;
               const originY = measuredLayout ? trayTop + measuredLayout.y : trayTop + trayVerticalOffset;
               const isActive = activeDrag?.itemId === item.id;
 
               return (
-                <View key={item.id} style={{ marginRight: FOOD_GAP, flexShrink: 0, width: TRAY_ITEM_WIDTH, height: TRAY_ITEM_HEIGHT, alignItems: 'center', justifyContent: 'center' }}>
+                <View key={item.id} style={{ marginRight: TRAY_ITEM_SPACING, flexShrink: 0, width: TRAY_ITEM_WIDTH, height: TRAY_ITEM_HEIGHT, alignItems: 'center', justifyContent: 'center' }}>
                   <View
                     onLayout={(event) => {
                       const { x, y } = event.nativeEvent.layout;
@@ -368,8 +512,10 @@ export default function GameScreen() {
             pointerEvents="none"
           >
             <FoodToken
-              label={foodTray.find((entry) => entry.id === activeDrag.itemId)?.label ?? ""}
+              label={foodTray.find((entry) => entry.id === activeDrag.itemId)?.nomePrincipal ?? ""}
               color={foodTray.find((entry) => entry.id === activeDrag.itemId)?.color ?? "#DADADA"}
+              imageUri={foodTray.find((entry) => entry.id === activeDrag.itemId)?.imageUri}
+              showLabel={true}
             />
           </View>
         ) : null}
@@ -402,13 +548,25 @@ export default function GameScreen() {
                   },
                 ]}
               >
-                <FoodToken label={item.label} color={item.color} size={FOOD_SIZE} />
+                <FoodToken label={item.nomePrincipal} color={item.color} imageUri={item.imageUri} size={FOOD_SIZE} showLabel={true} />
               </View>
             );
           }),
         )}
 
-        <Text style={[styles.helperText, { top: scaleY(281), left: scaleX(32) }]}>Arraste os alimentos para o prato</Text>
+        {!foodsLoaded ? (
+          <Text style={[styles.helperText, { top: scaleY(310), left: scaleX(32), color: "#145FA0" }]}>Carregando alimentos...</Text>
+        ) : null}
+
+        {foodsLoaded && foodTray.length === 0 && !foodsError ? (
+          <Text style={[styles.helperText, { top: scaleY(330), left: scaleX(32), color: "#145FA0" }]}>Nenhum alimento retornado pela API.</Text>
+        ) : null}
+
+        {foodsError ? (
+          <Text style={[styles.helperText, { top: scaleY(330), left: scaleX(32), color: "#B42318" }]}>{foodsError}</Text>
+        ) : null}
+
+        <Text style={[styles.helperText, { top: scaleY(318), left: scaleX(32) }]}>Arraste os alimentos para o prato</Text>
 
         <Pressable
           accessibilityRole="button"

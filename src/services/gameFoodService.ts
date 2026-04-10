@@ -1,50 +1,72 @@
+import axios from "axios";
+
+import { apiClient, resolveApiBaseUrl } from "./apiClient";
+
 export type ApiFoodItem = {
-  name: string;
-  file64: string;
+  nomePrincipal: string;
+  grupoAlimentar: string;
+  imagem64: string;
 };
 
 type ApiFoodResponseItem = Partial<{
-  name: string;
-  nome: string;
-  file64: string;
-  image: string;
-  imageBase64: string;
+  nomePrincipal: string;
+  grupoAlimentar: string;
+  imagem64: string;
 }>;
 
 function normalizeFoodItem(item: ApiFoodResponseItem): ApiFoodItem | null {
-  const name = item.name ?? item.nome ?? "";
-  const file64 = item.file64 ?? item.image ?? item.imageBase64 ?? "";
+  const nomePrincipal = item.nomePrincipal ?? "";
+  const grupoAlimentar = item.grupoAlimentar ?? "";
+  const imagem64 = item.imagem64 ?? "";
 
-  if (!name || !file64) {
+  if (!nomePrincipal || !grupoAlimentar || !imagem64) {
     return null;
   }
 
   return {
-    name,
-    file64,
+    nomePrincipal,
+    grupoAlimentar,
+    imagem64,
   };
 }
 
 export async function fetchGameFoods(): Promise<ApiFoodItem[]> {
-  const apiUrl = process.env.BACKEND_A;
+  const baseUrl = resolveApiBaseUrl();
 
-  if (!apiUrl) {
+  if (!baseUrl) {
+    console.log("[gameFoodService] EXPO_PUBLIC_API_URL is missing");
     return [];
   }
 
-  const response = await fetch(apiUrl);
+  const endpoint = "/alimento/pegar-alimentos-aleatorios";
+  console.log("[gameFoodService] GET", endpoint);
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch game foods: ${response.status}`);
+  try {
+    const { data: payload } = await apiClient.get<unknown>(endpoint);
+
+    console.log("[gameFoodService] raw response", payload);
+
+    if (!Array.isArray(payload)) {
+      console.log("[gameFoodService] response is not an array");
+      return [];
+    }
+
+    const foods = payload.map((item) => normalizeFoodItem(item as ApiFoodResponseItem)).filter((item): item is ApiFoodItem => Boolean(item));
+    console.log("[gameFoodService] normalized foods count", foods.length);
+
+    return foods;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log("[gameFoodService] axios error", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        url: error.config?.baseURL ? `${error.config.baseURL}${error.config.url ?? ""}` : error.config?.url,
+      });
+      throw new Error(error.response?.status ? `HTTP ${error.response.status}` : error.message);
+    }
+
+    console.log("[gameFoodService] unknown error", error);
+    throw error;
   }
-
-  const payload = (await response.json()) as unknown;
-
-  if (!Array.isArray(payload)) {
-    return [];
-  }
-  console.log(payload);
-
-
-  return payload.map((item) => normalizeFoodItem(item as ApiFoodResponseItem)).filter((item): item is ApiFoodItem => Boolean(item));
 }

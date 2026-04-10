@@ -1,0 +1,145 @@
+import { StyleSheet } from "react-native";
+
+export const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingBottom: 18,
+    paddingTop: 34,
+  },
+  headerBar: {
+    position: "relative",
+    marginHorizontal: -24,
+    marginTop: 11,
+    marginBottom: 20,
+    paddingHorizontal: 24,
+    paddingTop: 14,
+    paddingBottom: 20,
+    minHeight: 90,
+    backgroundColor: "#FFFFFF",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  headerBarShadow: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 1,
+    backgroundColor: "rgba(0,0,0,0.06)",
+    shadowColor: "#000000",
+    shadowOpacity: 0.18,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  backButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerRightWrap: {
+    flex: 1,
+    alignItems: "flex-end",
+    justifyContent: "center",
+  },
+  headerRightText: {
+    color: "#01AB51",
+    fontSize: 22,
+    lineHeight: 22,
+    fontWeight: "800",
+    fontFamily: "Poppins-Bold",
+  },
+  scrollContent: {
+    paddingBottom: 26,
+  },
+  heroBlock: {
+    marginBottom: 22,
+  },
+  foodName: {
+    color: "#1D1D1D",
+    fontSize: 26,
+    lineHeight: 30,
+    fontWeight: "800",
+    marginBottom: 4,
+  },
+  groupRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 12,
+  },
+  heartIcon: {
+    marginTop: 1,
+  },
+  groupText: {
+    flex: 1,
+    fontSize: 18,
+    lineHeight: 22,
+    fontWeight: "600",
+  },
+  imageFrame: {
+    width: "100%",
+    height: 180,
+    borderRadius: 18,
+    overflow: "hidden",
+    backgroundColor: "#EAF2F8",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+  },
+  sectionBlock: {
+    marginBottom: 22,
+  },
+  sectionTitle: {
+    color: "#2D2D2D",
+    fontSize: 23,
+    lineHeight: 24,
+    fontWeight: "800",
+    marginBottom: 12,
+  },
+  sectionValue: {
+    fontSize: 19,
+    lineHeight: 23,
+    color: "#6C6C6C",
+    fontWeight: "500",
+  },
+  sectionBody: {
+    color: "#6C6C6C",
+    fontSize: 17,
+    lineHeight: 23,
+    fontWeight: "500",
+  },
+  bulletList: {
+    gap: 8,
+  },
+  bulletRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+  },
+  bulletMark: {
+    color: "#6C6C6C",
+    fontSize: 18,
+    lineHeight: 22,
+    marginTop: -1,
+  },
+  bulletText: {
+    flex: 1,
+    color: "#6C6C6C",
+    fontSize: 17,
+    lineHeight: 23,
+    fontWeight: "500",
+  },
+  mutedText: {
+    color: "#6E6E6E",
+  },
+});
