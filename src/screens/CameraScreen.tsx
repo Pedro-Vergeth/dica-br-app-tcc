@@ -48,7 +48,7 @@ export default function CameraScreen() {
   if (!permission.granted) {
     return (
       <View style={styles.permissionWrap}>
-        <ExpoStatusBar style="light" translucent />
+        <ExpoStatusBar style="light" hidden translucent />
         <Ionicons name="camera" size={44} color="#FFFFFF" />
         <Text style={styles.permissionTitle}>Permissão da câmera necessária</Text>
         <Text style={styles.permissionText}>Precisamos da câmera para reconhecer o alimento e preencher a busca automaticamente.</Text>
@@ -64,32 +64,48 @@ export default function CameraScreen() {
 
   return (
     <View style={styles.screen}>
-      <ExpoStatusBar style="light" translucent />
+      <ExpoStatusBar style="light" hidden translucent />
 
       <CameraView ref={cameraRef} style={styles.camera} facing="back" />
 
-      <View style={styles.overlay}>
-        <View style={styles.topBar}>
-          <Pressable style={styles.topButton} onPress={() => router.back()} accessibilityRole="button">
-            <Ionicons name="close" size={24} color="#FFFFFF" />
-          </Pressable>
-          <View style={styles.titleWrap}>
-            <Text style={styles.title}>Reconhecer alimento</Text>
+      <View style={styles.overlay} pointerEvents="box-none">
+        <Pressable style={styles.backButton} onPress={() => router.back()} accessibilityRole="button">
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </Pressable>
+
+        <Text style={styles.title}>Pesquisar por imagem</Text>
+
+        <View style={styles.topActions} pointerEvents="box-none">
+          <View style={styles.actionButton}>
+            <Ionicons name="camera-reverse-outline" size={24} color="#FFFFFF" />
           </View>
-          <View style={styles.topButton}>
-            <Ionicons name="scan" size={20} color="#FFFFFF" />
+          <View style={styles.actionButton}>
+            <Ionicons name="flash-outline" size={24} color="#FFFFFF" />
           </View>
         </View>
 
-        <View style={styles.centerGuide} />
+        <View style={styles.frameWrap} pointerEvents="none">
+          <View style={styles.frameCornerTopLeft} />
+          <View style={styles.frameCornerTopRight} />
+          <View style={styles.frameCornerBottomLeft} />
+          <View style={styles.frameCornerBottomRight} />
+        </View>
 
-        <View style={styles.bottomBar}>
-          <Text style={styles.helpText}>Posicione o alimento dentro da moldura e toque no botão para capturar.</Text>
-          <View style={styles.captureButtonRow}>
-            <Pressable style={styles.captureButton} onPress={() => void takePicture()} accessibilityRole="button" disabled={loading}>
-              <View style={styles.captureButtonInner} />
-            </Pressable>
-          </View>
+        <View style={styles.bottomActions} pointerEvents="box-none">
+          <Pressable style={styles.galleryButton} accessibilityRole="button">
+            <Ionicons name="image-outline" size={22} color="#2E2E2E" />
+          </Pressable>
+
+          <Pressable
+            style={styles.captureButton}
+            onPress={() => void takePicture()}
+            accessibilityRole="button"
+            disabled={loading}
+          >
+            <View style={styles.captureButtonInner}>
+              <Ionicons name="search" size={24} color="#2E2E2E" />
+            </View>
+          </Pressable>
         </View>
 
         {error ? (

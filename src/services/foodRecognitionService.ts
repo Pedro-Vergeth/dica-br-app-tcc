@@ -56,10 +56,10 @@ export async function recognizeFoodFromImage(imageUri: string): Promise<string> 
   }
 
   const formData = new FormData();
-  formData.append("image", {
+  formData.append("imagem", {
     uri: imageUri,
-    name: "food.jpg",
-    type: "image/jpeg",
+    name: "food.png",
+    type: "image/png",
   } as unknown as Blob);
 
   const endpoint = "ia";
