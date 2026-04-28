@@ -1,6 +1,6 @@
 import * as SQLite from "expo-sqlite";
 
-export type RecentHistoryScreenKey = "search" | "recipes";
+export type RecentHistoryScreenKey = "search" | "recipes" | "library";
 export type RecentHistoryKind = "query" | "item";
 
 export type RecentHistoryEntry = {
