@@ -16,6 +16,8 @@ type DetailParams = {
 type DetailItem = SearchFoodItem & {
   sinonimos?: string | string[];
   porcao?: string;
+  porcaoPorUnidade?: string;
+  porcao_por_unidade?: string;
   medidaCaseira?: string;
   medidacaseira?: string;
   textoInformativo?: string;
@@ -85,6 +87,19 @@ function readMeasureField(item: DetailItem | null) {
   return measure || "Não informado";
 }
 
+function readPortionField(item: DetailItem | null) {
+  if (!item) {
+    return "Não informado";
+  }
+
+  const portionByUnit =
+    readText(item.porcaoPorUnidade, "") ||
+    readText(item.porcao_por_unidade, "") ||
+    readText(item.porcao, "");
+
+  return portionByUnit || "Não informado";
+}
+
 export default function SearchDetailScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<DetailParams>();
@@ -147,7 +162,7 @@ export default function SearchDetailScreen() {
   const grupoAlimentar = "Grupo " + (item?.grupoAlimentar?.trim().toLowerCase() || grupoAlimentarParam || "Grupo alimentar não informado");
   const imageUri = item?.imagem64 ? toImageUri(item.imagem64) : "";
   const heartColor = item?.heartColor?.trim() || "#01AB51";
-  const portionText = readFoodField(item, "porcao", "Não informado");
+  const portionText = readPortionField(item);
   const synonymValues = toList(item?.sinonimos);
   const informationText = readFoodField(item, "textoInformativo", "Não informado");
   const houseMeasure = readMeasureField(item);
@@ -189,7 +204,7 @@ export default function SearchDetailScreen() {
               </View>
 
               <View style={styles.sectionBlock}>
-                <Text style={styles.sectionTitle}>Porção</Text>
+                <Text style={styles.sectionTitle}>Porção por unidade</Text>
                 <Text style={styles.sectionValue}>{portionText}</Text>
               </View>
 

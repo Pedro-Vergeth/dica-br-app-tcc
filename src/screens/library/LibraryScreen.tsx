@@ -372,7 +372,7 @@ export default function LibraryScreen() {
       <ExpoStatusBar style="dark" translucent />
 
       <View style={searchStyles.content}>
-        <AppHeader variant="logo" title="Biblioteca" />
+        <AppHeader title="Biblioteca" />
 
         <FlatList
           ref={listRef}

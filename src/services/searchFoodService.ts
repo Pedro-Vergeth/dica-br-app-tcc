@@ -31,7 +31,11 @@ export type SearchFoodItem = ApiFoodItem & {
   heartColor: string;
   [key: string]: unknown;
   sinonimos?: string | string[];
+  quantidade?: number | string;
+  unidade?: string;
   porcao?: string;
+  porcaoPorUnidade?: string;
+  porcao_por_unidade?: string;
   medidaCaseira?: string;
   medidacaseira?: string;
   textoInformativo?: string;
@@ -78,21 +82,30 @@ export async function fetchSearchFoods(buscaLivre: string): Promise<SearchFoodIt
 
     const foods = candidateList
       .map((item) => {
-        const candidate = item as Partial<ApiFoodItem> & Partial<{ name: string; file64: string }>;
+        const candidate = item as Partial<ApiFoodItem> & Partial<{ name: string; file64: string; quantity: number | string; quantidade: number | string; quantidadePorUnidade: number | string; quantidade_por_unidade: number | string; unidade: string }>;
 
         const nomePrincipal = candidate.nomePrincipal ?? candidate.name ?? "";
         const grupoAlimentar = candidate.grupoAlimentar ?? "";
         const imagem64 = candidate.imagem64 ?? candidate.file64 ?? "";
+        const quantidade = candidate.quantidade ?? candidate.quantity ?? candidate.quantidadePorUnidade ?? candidate.quantidade_por_unidade;
+        const unidade = candidate.unidade ?? "";
 
         if (!nomePrincipal || !grupoAlimentar || !imagem64) {
           return null;
         }
+
+        const porcao = candidate.porcao ?? "";
+        const porcaoPorUnidade = candidate.porcaoPorUnidade ?? candidate.porcao_por_unidade ?? "";
 
         return {
           ...candidate,
           nomePrincipal,
           grupoAlimentar,
           imagem64,
+          quantidade,
+          unidade,
+          porcao,
+          porcaoPorUnidade,
           heartColor: resolveHeartColor(grupoAlimentar),
         } satisfies SearchFoodItem;
       })

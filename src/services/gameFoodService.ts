@@ -6,6 +6,11 @@ export type ApiFoodItem = {
   nomePrincipal: string;
   grupoAlimentar: string;
   imagem64: string;
+  quantidade?: number | string;
+  unidade?: string;
+  porcao?: string;
+  porcaoPorUnidade?: string;
+  porcao_por_unidade?: string;
 };
 
 type ApiFoodResponseItem = Partial<{
@@ -13,12 +18,37 @@ type ApiFoodResponseItem = Partial<{
   grupoAlimentar: string;
   imagem64: string;
   file64: string;
+  quantity: number | string;
+  quantidade: number | string;
+  quantidadePorUnidade: number | string;
+  quantidade_por_unidade: number | string;
+  unidade: string;
+  porcao: string;
+  porcaoPorUnidade: string;
+  porcao_por_unidade: string;
 }>;
+
+function parseNumber(value: number | string | undefined): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string" && value.trim()) {
+    const normalizedValue = Number(value.replace(",", "."));
+    return Number.isFinite(normalizedValue) ? normalizedValue : null;
+  }
+
+  return null;
+}
 
 function normalizeFoodItem(item: ApiFoodResponseItem): ApiFoodItem | null {
   const nomePrincipal = item.nomePrincipal ?? "";
   const grupoAlimentar = item.grupoAlimentar ?? "";
   const imagem64 = item.imagem64 ?? item.file64 ?? "";
+  const quantidade = parseNumber(item.quantidade ?? item.quantity ?? item.quantidadePorUnidade ?? item.quantidade_por_unidade);
+  const unidade = item.unidade ?? "";
+  const porcao = item.porcao ?? "";
+  const porcaoPorUnidade = item.porcaoPorUnidade ?? item.porcao_por_unidade ?? "";
 
   if (!nomePrincipal || !grupoAlimentar || !imagem64) {
     return null;
@@ -28,6 +58,10 @@ function normalizeFoodItem(item: ApiFoodResponseItem): ApiFoodItem | null {
     nomePrincipal,
     grupoAlimentar,
     imagem64,
+    quantidade: quantidade ?? undefined,
+    unidade,
+    porcao,
+    porcaoPorUnidade,
   };
 }
 

@@ -139,7 +139,7 @@ export default function SearchScreen() {
       <ExpoStatusBar style="dark" translucent />
 
       <View style={styles.content}>
-        <AppHeader variant="logo" title="IA" />
+        <AppHeader title="IA" />
 
         <View style={styles.searchBarRow}>
           <View style={styles.searchInputWrap}>

@@ -479,7 +479,7 @@ export default function RecipesScreen() {
       <ExpoStatusBar style="dark" translucent />
 
       <View style={searchStyles.content}>
-        <AppHeader variant="logo" title="Receitas" />
+        <AppHeader title="Receitas" />
 
         <View style={screenStyles.searchBarRow}>
           <View style={searchStyles.searchInputWrap}>

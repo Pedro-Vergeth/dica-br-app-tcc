@@ -91,11 +91,11 @@ export default function ProfileHomeScreen() {
         <View style={styles.sectionBlock}>
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionBlockTitle}>Diário alimentar</Text>
-            <Pressable onPress={() => router.push("/camera-capture")} accessibilityRole="button">
+            <Pressable onPress={() => router.push("/meal-history")} accessibilityRole="button">
               <Text style={styles.sectionAction}>Ver tudo</Text>
             </Pressable>
           </View>
-          <Pressable style={styles.actionButton} onPress={() => router.push("/camera-capture")} accessibilityRole="button">
+          <Pressable style={styles.actionButton} onPress={() => router.push("/meal-history")} accessibilityRole="button">
             <Ionicons name="add" size={24} color="#FFFFFF" />
             <Text style={styles.actionButtonText}>Registrar refeição</Text>
           </Pressable>
