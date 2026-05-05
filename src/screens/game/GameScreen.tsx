@@ -2,8 +2,9 @@ import React from "react";
 import { Image, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, Text, UIManager, useWindowDimensions, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
-import { fetchGameFoods } from "../services/gameFoodService";
-import { styles } from "../styles/GameScreenStyles";
+import BackHeader from "../../components/BackHeader";
+import { fetchGameFoods } from "../../services/gameFoodService";
+import { styles } from "../../styles/GameScreenStyles";
 import Svg, { Path, Text as SvgText, TextPath } from "react-native-svg";
 
 const BOARD_DESIGN_WIDTH = 346;
@@ -409,32 +410,36 @@ export default function GameScreen() {
     <View style={styles.screen}>
       <StatusBar style="dark" translucent />
 
-      <View style={styles.header}>
-        <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton} hitSlop={10}>
-          <Text style={styles.backButtonIcon}>←</Text>
-        </Pressable>
-        <Text style={styles.headerTitle}>Monte seu prato</Text>
-      </View>
+      <BackHeader
+        title="Monte seu prato"
+        onBackPress={() => router.back()}
+        containerStyle={styles.header}
+        backButtonStyle={styles.backButton}
+        backButtonIconColor="#01AB51"
+        backButtonIconSize={28}
+        titleWrapStyle={styles.titleWrap}
+        titleStyle={styles.headerTitle}
+      />
 
       <View style={[styles.content, { paddingTop: scaleY(122) }]}>
         <Text style={[styles.sectionTitle, { top: scaleY(156), left: scaleX(32) }]}>Alimentos</Text>
 
         <View style={[styles.boardWrapper, { left: boardLeft, top: boardTop, width: boardWidth, height: boardHeight }]}>
           <Image
-            source={require("../../assets/images/game/backgroundPlate.png")}
+            source={require("../../../assets/images/game/backgroundPlate.png")}
             resizeMode="stretch"
             style={styles.boardBackground}
           />
           <View style={[styles.plateLayer, { left: (boardWidth - plateSize) / 2, top: scaleY(8), width: plateSize, height: plateSize }]}>
-            <Image source={require("../../assets/images/game/plateGame/plate.png")} resizeMode="contain" style={styles.plateImage} />
+            <Image source={require("../../../assets/images/game/plateGame/plate.png")} resizeMode="contain" style={styles.plateImage} />
             <View style={[styles.zoneClip, { left: 0, top: 0, width: plateSize / 2, height: plateSize }]}>
-              <Image source={require("../../assets/images/game/plateGame/greenZone.png")} resizeMode="contain" style={[styles.zoneImage, styles.zoneGreen]} />
+              <Image source={require("../../../assets/images/game/plateGame/greenZone.png")} resizeMode="contain" style={[styles.zoneImage, styles.zoneGreen]} />
             </View>
             <View style={[styles.zoneClip, { left: plateSize / 2, top: 0, width: plateSize / 2, height: plateSize / 2 }]}>
-              <Image source={require("../../assets/images/game/plateGame/yellowZone.png")} resizeMode="contain" style={[styles.zoneImage, styles.zoneYellow]} />
+              <Image source={require("../../../assets/images/game/plateGame/yellowZone.png")} resizeMode="contain" style={[styles.zoneImage, styles.zoneYellow]} />
             </View>
             <View style={[styles.zoneClip, { left: plateSize / 2, top: plateSize / 2, width: plateSize / 2, height: plateSize / 2 }]}>
-              <Image source={require("../../assets/images/game/plateGame/blueZone.png")} resizeMode="contain" style={[styles.zoneImage, styles.zoneBlue]} />
+              <Image source={require("../../../assets/images/game/plateGame/blueZone.png")} resizeMode="contain" style={[styles.zoneImage, styles.zoneBlue]} />
             </View>
           </View>
         </View>

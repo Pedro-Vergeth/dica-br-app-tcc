@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#F7F8FA",
+    backgroundColor: "#FFFFFF",
   },
   content: {
     flex: 1,
@@ -19,45 +19,10 @@ export const styles = StyleSheet.create({
     paddingTop: 14,
     paddingBottom: 20,
     minHeight: 82,
-    backgroundColor: "#F7F8FA",
+    backgroundColor: "#FFFFFF",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-  },
-  logoRowBottomShadow: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 1,
-    backgroundColor: "rgba(0,0,0,0.06)",
-    shadowColor: "#000000",
-    shadowOpacity: 0.18,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  logoImage: {
-    width: 126,
-    height: 42,
-  },
-  logoRightLabel: {
-    position: "relative",
-    color: "#01AB51",
-    fontSize: 22,
-    lineHeight: 22,
-    fontWeight: "800",
-    fontFamily: "Poppins-Bold",
-  },
-  sectionTitle: {
-    color: "#1C1C1C",
-    fontSize: 22,
-    lineHeight: 26,
-    fontWeight: "800",
-    marginBottom: 12,
-  },
-  searchBarRow: {
-    flexDirection: "row",
     alignItems: "center",
     gap: 10,
     marginBottom: 18,
@@ -85,6 +50,12 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     paddingVertical: 0,
+  },
+  searchBarRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 18,
   },
   cameraButton: {
     width: 44,

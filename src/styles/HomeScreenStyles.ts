@@ -3,40 +3,13 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#F7F8FA",
+    backgroundColor: "#ffffff",
   },
   content: {
     flex: 1,
     paddingTop: 48,
     paddingHorizontal: 24,
     paddingBottom: 110,
-  },
-  logoRow: {
-    position: "relative",
-    marginHorizontal: -24,
-    marginBottom: 22,
-    paddingHorizontal: 24,
-    paddingTop: 14,
-    paddingBottom: 20,
-    minHeight: 82,
-    backgroundColor: "#F7F8FA",
-  },
-  logoRowBottomShadow: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 1,
-    backgroundColor: "rgba(0,0,0,0.06)",
-    shadowColor: "#000000",
-    shadowOpacity: 0.18,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  logoImage: {
-    width: 126,
-    height: 42,
   },
   sectionTitle: {
     color: "#1C1C1C",

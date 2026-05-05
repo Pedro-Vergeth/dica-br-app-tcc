@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
 
-import LoadingScreen from "../src/screens/LoadingScreen";
+import LoadingScreen from "../src/screens/common/LoadingScreen";
 import { getInitialRoute } from "../src/services/onboardingStorage";
 
 export default function Index() {

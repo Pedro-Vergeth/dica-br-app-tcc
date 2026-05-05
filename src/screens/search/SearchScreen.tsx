@@ -4,9 +4,10 @@ import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-import { SearchIcon as NavbarSearchIcon } from "../components/NavbarIcons";
-import { fetchSearchFoods, type SearchFoodItem } from "../services/searchFoodService";
-import { styles } from "../styles/SearchScreenStyles";
+import AppHeader from "../../components/AppHeader";
+import { SearchIcon as NavbarSearchIcon } from "../../components/NavbarIcons";
+import { fetchSearchFoods, type SearchFoodItem } from "../../services/searchFoodService";
+import { styles } from "../../styles/SearchScreenStyles";
 
 type SearchResultItem = SearchFoodItem & {
   imageUri: string;
@@ -138,15 +139,7 @@ export default function SearchScreen() {
       <ExpoStatusBar style="dark" translucent />
 
       <View style={styles.content}>
-        <View style={styles.logoRow}>
-          <Image
-            source={require("../../assets/images/openScreen/logo.png")}
-            resizeMode="contain"
-            style={styles.logoImage}
-          />
-          <Text style={styles.logoRightLabel}>IA</Text>
-          <View pointerEvents="none" style={styles.logoRowBottomShadow} />
-        </View>
+        <AppHeader variant="logo" title="IA" />
 
         <View style={styles.searchBarRow}>
           <View style={styles.searchInputWrap}>
@@ -216,7 +209,7 @@ export default function SearchScreen() {
         <View style={styles.bottomNavRow}>
           <Pressable style={styles.navItem} onPress={() => router.replace("/home")}>
             <Image
-              source={require("../../assets/images/navbar/home.png")}
+              source={require("../../../assets/images/navbar/home.png")}
               resizeMode="contain"
               style={styles.navIconImage}
             />
@@ -225,7 +218,7 @@ export default function SearchScreen() {
 
           <Pressable style={styles.navItem} onPress={() => router.push("/recipes")}>
             <Image
-              source={require("../../assets/images/navbar/receitas.png")}
+              source={require("../../../assets/images/navbar/receitas.png")}
               resizeMode="contain"
               style={styles.navIconImage}
             />
@@ -244,7 +237,7 @@ export default function SearchScreen() {
 
           <Pressable style={styles.navItem} onPress={() => router.push("/library")}>
             <Image
-              source={require("../../assets/images/navbar/biblioteca.png")}
+              source={require("../../../assets/images/navbar/biblioteca.png")}
               resizeMode="contain"
               style={styles.navIconImage}
             />
@@ -253,7 +246,7 @@ export default function SearchScreen() {
 
           <Pressable style={styles.navItem} onPress={() => router.push("/profile")}>
             <Image
-              source={require("../../assets/images/navbar/perfil.png")}
+              source={require("../../../assets/images/navbar/perfil.png")}
               resizeMode="contain"
               style={styles.navIconImage}
             />

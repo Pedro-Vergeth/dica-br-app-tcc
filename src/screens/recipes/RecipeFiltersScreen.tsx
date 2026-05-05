@@ -4,6 +4,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
+import BackHeader from "../../components/BackHeader";
+
 const tipoRefeicaoOptions = ["CAFE_DA_MANHA", "ALMOCO", "JANTAR", "LANCHE"] as const;
 const tipoRefeicaoLabels: Record<(typeof tipoRefeicaoOptions)[number], string> = {
   CAFE_DA_MANHA: "Café da manhã",
@@ -71,13 +73,7 @@ export default function RecipeFiltersScreen() {
     <View style={styles.screen}>
       <ExpoStatusBar style="dark" translucent />
 
-      <View style={styles.header}>
-        <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#145FA0" />
-        </Pressable>
-        <Text style={styles.title}>Filtros</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <BackHeader title="Filtros" onBackPress={() => router.back()} />
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.sectionTitle}>Tipo de refeição</Text>

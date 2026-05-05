@@ -4,8 +4,9 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-import { fetchSearchFoods, type SearchFoodItem } from "../services/searchFoodService";
-import { styles } from "../styles/SearchDetailScreenStyles";
+import BackHeader from "../../components/BackHeader";
+import { fetchSearchFoods, type SearchFoodItem } from "../../services/searchFoodService";
+import { styles } from "../../styles/SearchDetailScreenStyles";
 
 type DetailParams = {
   nomePrincipal?: string | string[];
@@ -156,17 +157,7 @@ export default function SearchDetailScreen() {
       <ExpoStatusBar style="dark" translucent />
 
       <View style={styles.content}>
-        <View style={styles.headerBar}>
-          <Pressable style={styles.backButton} onPress={() => router.back()} accessibilityRole="button">
-            <Ionicons name="arrow-back" size={33} color="#01AB51" />
-          </Pressable>
-
-          <View style={styles.headerRightWrap}>
-            <Text style={styles.headerRightText}>Detalhes pesquisa</Text>
-          </View>
-
-          <View pointerEvents="none" style={styles.headerBarShadow} />
-        </View>
+        <BackHeader title="Detalhes pesquisa" onBackPress={() => router.back()} />
 
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
           {loading ? <Text style={styles.sectionBody}>Carregando detalhes...</Text> : null}

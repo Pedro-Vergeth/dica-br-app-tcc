@@ -5,8 +5,9 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 
-import { recognizeFoodFromImage } from "../services/foodRecognitionService";
-import { styles } from "../styles/CameraScreenStyles";
+import BackHeader from "../../components/BackHeader";
+import { recognizeFoodFromImage } from "../../services/foodRecognitionService";
+import { styles } from "../../styles/CameraScreenStyles";
 
 export default function CameraScreen() {
   const router = useRouter();
@@ -69,11 +70,17 @@ export default function CameraScreen() {
       <CameraView ref={cameraRef} style={styles.camera} facing="back" />
 
       <View style={styles.overlay} pointerEvents="box-none">
-        <Pressable style={styles.backButton} onPress={() => router.back()} accessibilityRole="button">
-          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-        </Pressable>
-
-        <Text style={styles.title}>Pesquisar por imagem</Text>
+        <BackHeader
+          title="Pesquisar por imagem"
+          onBackPress={() => router.back()}
+          containerStyle={styles.header}
+          backButtonStyle={styles.backButton}
+          backButtonIconColor="#FFFFFF"
+          backButtonIconSize={24}
+          titleWrapStyle={styles.titleWrap}
+          titleStyle={styles.title}
+          showShadow={false}
+        />
 
         <View style={styles.topActions} pointerEvents="box-none">
           <View style={styles.actionButton}>

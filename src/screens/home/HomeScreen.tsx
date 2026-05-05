@@ -2,8 +2,11 @@ import React from "react";
 import { Image, Pressable, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 
-import { styles } from "../styles/HomeScreenStyles";
+import AppHeader from "../../components/AppHeader";
+import { loadProfileSummary } from "../../services/profileStorage";
+import { styles } from "../../styles/HomeScreenStyles";
 
 function SearchIcon() {
   return (
@@ -16,37 +19,49 @@ function SearchIcon() {
 
 export default function HomeScreen() {
   const router = useRouter();
+  const [hasProfile, setHasProfile] = React.useState<boolean | null>(null);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      let isActive = true;
+
+      const resolveProfileState = async () => {
+        const storedProfile = await loadProfileSummary();
+
+        if (isActive) {
+          setHasProfile(Boolean(storedProfile));
+        }
+      };
+
+      void resolveProfileState();
+
+      return () => {
+        isActive = false;
+      };
+    }, []),
+  );
 
   return (
     <View style={styles.screen}>
       <StatusBar style="dark" translucent />
 
       <View style={styles.content}>
-        <View style={styles.logoRow}>
-          <Image
-            source={require("../../assets/images/openScreen/logo.png")}
-            resizeMode="contain"
-            style={styles.logoImage}
-          />
-          <View pointerEvents="none" style={styles.logoRowBottomShadow} />
-        </View>
+        <AppHeader title="Início" />
 
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionHeaderTitle}>Meu perfil</Text>
-        </View>
-
-        <Pressable style={styles.profileCard} onPress={() => router.push("/profile")}>
-          <View style={styles.profileCardTextWrap}>
-            <Text style={styles.profileCardTitle}>Personalize sua dieta</Text>
-            <Text style={styles.profileCardText}>
-              Informe sua altura, peso e idade para calcular seu IMC e suas metas diárias de alimentação.
-            </Text>
-            <View style={styles.profileButton}>
-              <Text style={styles.profileButtonText}>Configurar perfil</Text>
+        {hasProfile === false ? (
+          <Pressable style={styles.profileCard} onPress={() => router.push("/profile")}>
+            <View style={styles.profileCardTextWrap}>
+              <Text style={styles.profileCardTitle}>Personalize sua dieta</Text>
+              <Text style={styles.profileCardText}>
+                Informe sua altura, peso e idade para calcular seu IMC e suas metas diárias de alimentação.
+              </Text>
+              <View style={styles.profileButton}>
+                <Text style={styles.profileButtonText}>Configurar perfil</Text>
+              </View>
             </View>
-          </View>
-          <View style={styles.profileIllustration} />
-        </Pressable>
+            <View style={styles.profileIllustration} />
+          </Pressable>
+        ) : null}
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionHeaderTitle}>Sugestões Para Você</Text>
@@ -96,7 +111,7 @@ export default function HomeScreen() {
         <View style={styles.bottomNavRow}>
           <Pressable style={styles.navItem} onPress={() => router.replace("/home")}>
             <Image
-              source={require("../../assets/images/navbar/home.png")}
+              source={require("../../../assets/images/navbar/home.png")}
               resizeMode="contain"
               style={styles.navIconImage}
             />
@@ -105,7 +120,7 @@ export default function HomeScreen() {
 
           <Pressable style={styles.navItem} onPress={() => router.push("/recipes")}>
             <Image
-              source={require("../../assets/images/navbar/receitas.png")}
+              source={require("../../../assets/images/navbar/receitas.png")}
               resizeMode="contain"
               style={styles.navIconImage}
             />
@@ -124,7 +139,7 @@ export default function HomeScreen() {
 
           <Pressable style={styles.navItem} onPress={() => router.push("/library")}>
             <Image
-              source={require("../../assets/images/navbar/biblioteca.png")}
+              source={require("../../../assets/images/navbar/biblioteca.png")}
               resizeMode="contain"
               style={styles.navIconImage}
             />
@@ -133,7 +148,7 @@ export default function HomeScreen() {
 
           <Pressable style={styles.navItem} onPress={() => router.push("/profile")}>
             <Image
-              source={require("../../assets/images/navbar/perfil.png")}
+              source={require("../../../assets/images/navbar/perfil.png")}
               resizeMode="contain"
               style={styles.navIconImage}
             />

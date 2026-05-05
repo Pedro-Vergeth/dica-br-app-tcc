@@ -4,8 +4,9 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-import type { RecipeItem } from "../services/recipeService";
-import { styles } from "../styles/RecipeDetailScreenStyles";
+import BackHeader from "../../components/BackHeader";
+import type { RecipeItem } from "../../services/recipeService";
+import { styles } from "../../styles/RecipeDetailScreenStyles";
 
 type DetailParams = {
   recipeJson?: string | string[];
@@ -133,17 +134,7 @@ export default function RecipeDetailScreen() {
       <ExpoStatusBar style="dark" translucent />
 
       <View style={styles.content}>
-        <View style={styles.headerBar}>
-          <Pressable style={styles.backButton} onPress={() => router.back()} accessibilityRole="button">
-            <Ionicons name="arrow-back" size={33} color="#01AB51" />
-          </Pressable>
-
-          <View style={styles.headerRightWrap}>
-            <Text style={styles.headerRightText}>Detalhes receitas</Text>
-          </View>
-
-          <View pointerEvents="none" style={styles.headerBarShadow} />
-        </View>
+        <BackHeader title="Detalhes receitas" onBackPress={() => router.back()} />
 
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
           {!recipe ? (

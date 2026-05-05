@@ -6,8 +6,9 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { VideoView, useVideoPlayer } from "expo-video";
 import YoutubePlayer from "react-native-youtube-iframe";
 
-import { type EducationalVideoItem } from "../services/videoService";
-import { styles } from "../styles/LibraryDetailsScreenStyles";
+import BackHeader from "../../components/BackHeader";
+import { type EducationalVideoItem } from "../../services/videoService";
+import { styles } from "../../styles/LibraryDetailsScreenStyles";
 
 type DetailParams = {
   videoJson?: string | string[];
@@ -90,7 +91,7 @@ export default function LibraryDetailsScreen() {
   const useYoutubePlayer = Boolean(video?.videoUrl && isYoutubeUrl(video.videoUrl) && youtubeVideoId);
 
   const player = useVideoPlayer(
-    !useYoutubePlayer && video?.videoUrl ? { uri: video.videoUrl } : require("../../assets/videos/videoDicabr.mp4"),
+    !useYoutubePlayer && video?.videoUrl ? { uri: video.videoUrl } : require("../../../assets/videos/videoDicabr.mp4"),
     (videoPlayer) => {
       videoPlayer.loop = false;
     },
@@ -101,17 +102,7 @@ export default function LibraryDetailsScreen() {
       <ExpoStatusBar style="dark" translucent />
 
       <View style={styles.content}>
-        <View style={styles.headerBar}>
-          <Pressable style={styles.backButton} onPress={() => router.back()} accessibilityRole="button">
-            <Ionicons name="arrow-back" size={33} color="#01AB51" />
-          </Pressable>
-
-          <View style={styles.headerRightWrap}>
-            <Text style={styles.headerRightText}>Biblioteca</Text>
-          </View>
-
-          <View pointerEvents="none" style={styles.headerBarShadow} />
-        </View>
+        <BackHeader title="Biblioteca" onBackPress={() => router.back()} />
 
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
           {!video ? (

@@ -17,13 +17,13 @@ import {
   getRegionImageByState,
   stateOptions,
   type StateOption,
-} from "../services/regionService";
+} from "../../services/regionService";
 import {
   loadSelectedState,
   saveFirstAccessCompleted,
   saveSelectedState,
-} from "../services/onboardingStorage";
-import { styles } from "../styles/StateSelectionScreenStyles";
+} from "../../services/onboardingStorage";
+import { styles } from "../../styles/StateSelectionScreenStyles";
 
 export default function StateSelectionScreen() {
   const router = useRouter();
@@ -79,7 +79,7 @@ export default function StateSelectionScreen() {
       <StatusBar style="dark" translucent />
 
       <ImageBackground
-        source={require("../../assets/images/openScreen/imageScreen.png")}
+        source={require("../../../assets/images/openScreen/imageScreen.png")}
         resizeMode="cover"
         style={styles.background}
       >

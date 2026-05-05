@@ -4,13 +4,13 @@ import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import { VideoView, useVideoPlayer } from "expo-video";
 
-import { saveIntroSeen } from "../services/onboardingStorage";
-import { styles } from "../styles/VideoScreenStyles";
+import { saveIntroSeen } from "../../services/onboardingStorage";
+import { styles } from "../../styles/VideoScreenStyles";
 
 export default function VideoScreen() {
   const router = useRouter();
   const { width, height } = useWindowDimensions();
-  const player = useVideoPlayer(require("../../assets/videos/videoDicabr.mp4"), (videoPlayer) => {
+  const player = useVideoPlayer(require("../../../assets/videos/videoDicabr.mp4"), (videoPlayer) => {
     videoPlayer.loop = true;
     videoPlayer.play();
   });

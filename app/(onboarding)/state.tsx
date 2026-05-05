@@ -1,4 +1,4 @@
-import StateSelectionScreen from "../../src/screens/StateSelectionScreen";
+import StateSelectionScreen from "../../src/screens/onboarding/StateSelectionScreen";
 
 export default function StateRoute() {
   return <StateSelectionScreen />;

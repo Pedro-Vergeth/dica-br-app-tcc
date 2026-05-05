@@ -4,14 +4,15 @@ import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import { useFonts } from "expo-font";
 
-import { styles } from "../styles/GameIntroScreenStyles";
+import BackHeader from "../../components/BackHeader";
+import { styles } from "../../styles/GameIntroScreenStyles";
 
 export default function GameIntroScreen() {
   const router = useRouter();
   const [fontsLoaded] = useFonts({
-    "Poppins-Regular": require("../../assets/fonts/Poppins/Poppins-Regular.ttf"),
-    "Poppins-SemiBold": require("../../assets/fonts/Poppins/Poppins-SemiBold.ttf"),
-    "Poppins-Bold": require("../../assets/fonts/Poppins/Poppins-Bold.ttf"),
+    "Poppins-Regular": require("../../../assets/fonts/Poppins/Poppins-Regular.ttf"),
+    "Poppins-SemiBold": require("../../../assets/fonts/Poppins/Poppins-SemiBold.ttf"),
+    "Poppins-Bold": require("../../../assets/fonts/Poppins/Poppins-Bold.ttf"),
   });
 
   if (!fontsLoaded) {
@@ -22,13 +23,15 @@ export default function GameIntroScreen() {
     <View style={styles.screen}>
       <StatusBar style="dark" translucent />
 
-      <View style={styles.header}>
-        <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton} hitSlop={10}>
-          <Text style={styles.backButtonIcon}>←</Text>
-        </Pressable>
-
-        <Text style={styles.headerTitle}>Monte seu prato</Text>
-      </View>
+      <BackHeader
+        title="Monte seu prato"
+        onBackPress={() => router.back()}
+        containerStyle={styles.header}
+        backButtonStyle={styles.backButton}
+        backButtonIconColor="#01AB51"
+        backButtonIconSize={28}
+        titleStyle={styles.headerTitle}
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} bounces={false}>
         <View style={styles.copyBlock}>
@@ -48,7 +51,7 @@ export default function GameIntroScreen() {
 
         <View style={styles.imageWrap}>
           <Image
-            source={require("../../assets/images/game/plateInfo.png")}
+            source={require("../../../assets/images/game/plateInfo.png")}
             resizeMode="contain"
             style={styles.heroImage}
           />

@@ -4,10 +4,11 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 
-import { SearchIcon as NavbarSearchIcon } from "../components/NavbarIcons";
-import { saveRecentAccessedItem } from "../services/recentHistoryService";
-import { fetchEducationalVideos, formatVideoDuration, type EducationalVideoItem } from "../services/videoService";
-import { styles as searchStyles } from "../styles/SearchScreenStyles";
+import AppHeader from "../../components/AppHeader";
+import { SearchIcon as NavbarSearchIcon } from "../../components/NavbarIcons";
+import { saveRecentAccessedItem } from "../../services/recentHistoryService";
+import { fetchEducationalVideos, formatVideoDuration, type EducationalVideoItem } from "../../services/videoService";
+import { styles as searchStyles } from "../../styles/SearchScreenStyles";
 
 type SortOption = "recentes" | "menorDuracao" | "maiorDuracao" | "tituloAZ";
 
@@ -114,7 +115,7 @@ function VideoPoster({
         </>
       ) : (
         <>
-          <Image source={require("../../assets/images/openScreen/vetor.png")} resizeMode="cover" style={styles.posterDecoration} />
+          <Image source={require("../../../assets/images/openScreen/vetor.png")} resizeMode="cover" style={styles.posterDecoration} />
           <View style={styles.posterGlow} />
         </>
       )}
@@ -371,15 +372,7 @@ export default function LibraryScreen() {
       <ExpoStatusBar style="dark" translucent />
 
       <View style={searchStyles.content}>
-        <View style={searchStyles.logoRow}>
-          <Image
-            source={require("../../assets/images/openScreen/logo.png")}
-            resizeMode="contain"
-            style={searchStyles.logoImage}
-          />
-          <Text style={searchStyles.logoRightLabel}>Biblioteca</Text>
-          <View pointerEvents="none" style={searchStyles.logoRowBottomShadow} />
-        </View>
+        <AppHeader variant="logo" title="Biblioteca" />
 
         <FlatList
           ref={listRef}
@@ -414,12 +407,12 @@ export default function LibraryScreen() {
       <View style={searchStyles.bottomNav}>
         <View style={searchStyles.bottomNavRow}>
           <Pressable style={searchStyles.navItem} onPress={() => router.replace("/home")}>
-            <Image source={require("../../assets/images/navbar/home.png")} resizeMode="contain" style={searchStyles.navIconImage} />
+            <Image source={require("../../../assets/images/navbar/home.png")} resizeMode="contain" style={searchStyles.navIconImage} />
             <Text style={searchStyles.navLabel}>Início</Text>
           </Pressable>
 
           <Pressable style={searchStyles.navItem} onPress={() => router.push("/recipes")}>
-            <Image source={require("../../assets/images/navbar/receitas.png")} resizeMode="contain" style={searchStyles.navIconImage} />
+            <Image source={require("../../../assets/images/navbar/receitas.png")} resizeMode="contain" style={searchStyles.navIconImage} />
             <Text style={searchStyles.navLabel}>Receitas</Text>
           </Pressable>
 
@@ -434,12 +427,12 @@ export default function LibraryScreen() {
           </Pressable>
 
           <Pressable style={searchStyles.navItem} onPress={() => router.push("/library")}>
-            <Image source={require("../../assets/images/navbar/biblioteca.png")} resizeMode="contain" style={searchStyles.navIconImage} />
+            <Image source={require("../../../assets/images/navbar/biblioteca.png")} resizeMode="contain" style={searchStyles.navIconImage} />
             <Text style={searchStyles.navLabel}>Biblioteca</Text>
           </Pressable>
 
           <Pressable style={searchStyles.navItem} onPress={() => router.push("/profile")}>
-            <Image source={require("../../assets/images/navbar/perfil.png")} resizeMode="contain" style={searchStyles.navIconImage} />
+            <Image source={require("../../../assets/images/navbar/perfil.png")} resizeMode="contain" style={searchStyles.navIconImage} />
             <Text style={searchStyles.navLabel}>Perfil</Text>
           </Pressable>
         </View>

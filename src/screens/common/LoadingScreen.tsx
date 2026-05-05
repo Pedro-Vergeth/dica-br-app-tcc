@@ -8,20 +8,20 @@ export default function LoadingScreen() {
       <StatusBar style="light" translucent />
 
       <ImageBackground
-        source={require("../../assets/images/openScreen/imageScreen.png")}
+        source={require("../../../assets/images/openScreen/imageScreen.png")}
         resizeMode="cover"
         style={styles.background}
       >
         <View style={styles.overlay}>
           <View style={styles.vectorContainer}>
             <Image
-              source={require("../../assets/images/openScreen/vetor.png")}
+              source={require("../../../assets/images/openScreen/vetor.png")}
               style={styles.vetor}
               resizeMode="contain"
             />
 
             <Image
-              source={require("../../assets/images/openScreen/logo.png")}
+              source={require("../../../assets/images/openScreen/logo.png")}
               style={styles.logo}
               resizeMode="contain"
             />
@@ -35,7 +35,7 @@ export default function LoadingScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#F4F7F1",
+    backgroundColor: "#FFFFFF",
   },
   background: {
     flex: 1,

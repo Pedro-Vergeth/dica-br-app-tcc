@@ -1,6 +1,6 @@
 import "./global.css";
 
-import LoadingScreen from "./src/screens/LoadingScreen";
+import LoadingScreen from "./src/screens/common/LoadingScreen";
 
 export default function App() {
   return <LoadingScreen />;
