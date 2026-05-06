@@ -66,11 +66,24 @@ function groupRecordsByDay(records: MealRecord[]) {
   return groups;
 }
 
+function HeartAmount({ value, color = "#01AB51" }: { value: number; color?: string }) {
+  const normalizedValue = Number.isFinite(value) ? Math.max(0, value) : 0;
+  const fullHearts = Math.floor(normalizedValue);
+  const hasHalfHeart = normalizedValue - fullHearts >= 0.5;
+
+  return (
+    <View style={styles.foodHeartAmount}>
+      {Array.from({ length: fullHearts }).map((_, index) => (
+        <Ionicons key={`full-${index}`} name="heart" size={13} color={color} />
+      ))}
+      {hasHalfHeart ? <Ionicons name="heart-half" size={13} color={color} /> : null}
+    </View>
+  );
+}
+
 function RecordSection({ record }: { record: MealRecord }) {
   return (
     <View style={styles.recordSection}>
-      <Text style={styles.recordMealLabel}>{record.mealLabel}</Text>
-
       <View style={styles.foodList}>
         {record.foods.map((food, index) => {
           const isLast = index === record.foods.length - 1;
@@ -79,14 +92,16 @@ function RecordSection({ record }: { record: MealRecord }) {
           return (
             <View key={food.id} style={[styles.foodRow, !isLast ? styles.foodRowDivider : null]}>
               <View style={styles.foodRowTop}>
-                <Text style={styles.foodRowTitle} numberOfLines={1}>
-                  {food.title}
-                </Text>
-                <Ionicons name="heart" size={13} color={heartColor} style={styles.foodHeartIcon} />
+                <View style={styles.foodTitleWrap}>
+                  <Text style={styles.foodRowTitle} numberOfLines={1}>
+                    {food.title}
+                  </Text>
+                  <HeartAmount value={food.heartQuantity} color={heartColor} />
+                </View>
               </View>
 
               <Text style={styles.foodRowMeta} numberOfLines={1}>
-                {food.quantity} {food.unit}
+                {food.quantity * food.heartQuantity} {food.unit}
               </Text>
             </View>
           );
