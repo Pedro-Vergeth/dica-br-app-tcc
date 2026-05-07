@@ -5,7 +5,6 @@ import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 
 import AppHeader from "../../components/AppHeader";
-import { SearchIcon as NavbarSearchIcon } from "../../components/NavbarIcons";
 import { saveRecentAccessedItem } from "../../services/recentHistoryService";
 import { fetchEducationalVideos, formatVideoDuration, type EducationalVideoItem } from "../../services/videoService";
 import { styles as searchStyles } from "../../styles/SearchScreenStyles";
@@ -402,40 +401,6 @@ export default function LibraryScreen() {
           contentContainerStyle={styles.listContent}
           keyboardShouldPersistTaps="handled"
         />
-      </View>
-
-      <View style={searchStyles.bottomNav}>
-        <View style={searchStyles.bottomNavRow}>
-          <Pressable style={searchStyles.navItem} onPress={() => router.replace("/home")}>
-            <Image source={require("../../../assets/images/navbar/home.png")} resizeMode="contain" style={searchStyles.navIconImage} />
-            <Text style={searchStyles.navLabel}>Início</Text>
-          </Pressable>
-
-          <Pressable style={searchStyles.navItem} onPress={() => router.push("/recipes")}>
-            <Image source={require("../../../assets/images/navbar/receitas.png")} resizeMode="contain" style={searchStyles.navIconImage} />
-            <Text style={searchStyles.navLabel}>Receitas</Text>
-          </Pressable>
-
-          <Pressable style={searchStyles.navCenterPressable} onPress={() => router.push("/search")}>
-            <View style={searchStyles.navCenterGroup}>
-              <View style={searchStyles.navCenterHalo} />
-              <View style={searchStyles.navCenterButton}>
-                <NavbarSearchIcon />
-              </View>
-              <Text style={searchStyles.navCenterLabel}>Pesquisar</Text>
-            </View>
-          </Pressable>
-
-          <Pressable style={searchStyles.navItem} onPress={() => router.push("/library")}>
-            <Image source={require("../../../assets/images/navbar/biblioteca.png")} resizeMode="contain" style={searchStyles.navIconImage} />
-            <Text style={searchStyles.navLabel}>Biblioteca</Text>
-          </Pressable>
-
-          <Pressable style={searchStyles.navItem} onPress={() => router.push("/profile")}>
-            <Image source={require("../../../assets/images/navbar/perfil.png")} resizeMode="contain" style={searchStyles.navIconImage} />
-            <Text style={searchStyles.navLabel}>Perfil</Text>
-          </Pressable>
-        </View>
       </View>
 
       <Modal transparent visible={sortMenuVisible} animationType="fade" onRequestClose={() => setSortMenuVisible(false)}>

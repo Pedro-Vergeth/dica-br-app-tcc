@@ -47,9 +47,11 @@ export const styles = StyleSheet.create({
     marginLeft: 12,
   },
   scrollContent: {
+    flex: 1,
     paddingHorizontal: 32,
-    paddingTop: 150,
+    paddingTop: 16,
     paddingBottom: 30,
+    justifyContent: "space-between",
   },
   copyBlock: {
     gap: 6,
@@ -98,7 +100,6 @@ export const styles = StyleSheet.create({
     alignSelf: "center",
     width: 178,
     height: 44,
-    marginTop: 36,
     backgroundColor: "#4BB05B",
     borderRadius: 12,
     alignItems: "center",
@@ -110,6 +111,7 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 6,
     elevation: 5,
+    marginBottom: 60,
   },
   primaryButtonText: {
     color: "#FFFFFF",

@@ -410,18 +410,8 @@ export default function GameScreen() {
     <View style={styles.screen}>
       <StatusBar style="dark" translucent />
 
-      <BackHeader
-        title="Monte seu prato"
-        onBackPress={() => router.back()}
-        containerStyle={styles.header}
-        backButtonStyle={styles.backButton}
-        backButtonIconColor="#01AB51"
-        backButtonIconSize={28}
-        titleWrapStyle={styles.titleWrap}
-        titleStyle={styles.headerTitle}
-      />
-
-      <View style={[styles.content, { paddingTop: scaleY(122) }]}>
+      <View style={styles.content}>
+      <BackHeader title="Monte seu prato" onBackPress={() => router.back()} containerStyle={{ paddingHorizontal: 46, marginTop: 40 }} />
         <Text style={[styles.sectionTitle, { top: scaleY(156), left: scaleX(32) }]}>Alimentos</Text>
 
         <View style={[styles.boardWrapper, { left: boardLeft, top: boardTop, width: boardWidth, height: boardHeight }]}>
@@ -577,7 +567,7 @@ export default function GameScreen() {
           accessibilityRole="button"
           disabled={!allPlaced}
           style={[styles.finishButton, { top: scaleY(708), left: (width - scaleX(228)) / 2 }, !allPlaced && styles.finishButtonDisabled]}
-          onPress={() => router.replace("/home")}
+          onPress={() => router.replace("/game-result")}
         >
           <Text style={styles.finishButtonText}>Finalizar</Text>
         </Pressable>

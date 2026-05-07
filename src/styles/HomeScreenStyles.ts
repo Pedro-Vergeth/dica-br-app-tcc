@@ -91,6 +91,7 @@ export const styles = StyleSheet.create({
     paddingBottom: 18,
     borderTopWidth: 1,
     borderTopColor: "#E6E6E6",
+    overflow: "visible",
   },
   bottomNavRow: {
     flexDirection: "row",

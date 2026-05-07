@@ -5,7 +5,6 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 import AppHeader from "../../components/AppHeader";
-import { SearchIcon as NavbarSearchIcon } from "../../components/NavbarIcons";
 import { fetchSearchFoods, type SearchFoodItem } from "../../services/searchFoodService";
 import { styles } from "../../styles/SearchScreenStyles";
 
@@ -198,55 +197,6 @@ export default function SearchScreen() {
         </ScrollView>
       </View>
 
-      <View style={styles.bottomNav}>
-        <View style={styles.bottomNavRow}>
-          <Pressable style={styles.navItem} onPress={() => router.replace("/home")}>
-            <Image
-              source={require("../../../assets/images/navbar/home.png")}
-              resizeMode="contain"
-              style={styles.navIconImage}
-            />
-            <Text style={styles.navLabel}>Início</Text>
-          </Pressable>
-
-          <Pressable style={styles.navItem} onPress={() => router.push("/recipes")}>
-            <Image
-              source={require("../../../assets/images/navbar/receitas.png")}
-              resizeMode="contain"
-              style={styles.navIconImage}
-            />
-            <Text style={styles.navLabel}>Receitas</Text>
-          </Pressable>
-
-          <Pressable style={styles.navCenterPressable} onPress={() => router.push("/search")}>
-            <View style={styles.navCenterGroup}>
-              <View style={styles.navCenterHalo} />
-              <View style={styles.navCenterButton}>
-                <NavbarSearchIcon />
-              </View>
-              <Text style={styles.navCenterLabel}>Pesquisar</Text>
-            </View>
-          </Pressable>
-
-          <Pressable style={styles.navItem} onPress={() => router.push("/library")}>
-            <Image
-              source={require("../../../assets/images/navbar/biblioteca.png")}
-              resizeMode="contain"
-              style={styles.navIconImage}
-            />
-            <Text style={styles.navLabel}>Biblioteca</Text>
-          </Pressable>
-
-          <Pressable style={styles.navItem} onPress={() => router.push("/profile")}>
-            <Image
-              source={require("../../../assets/images/navbar/perfil.png")}
-              resizeMode="contain"
-              style={styles.navIconImage}
-            />
-            <Text style={styles.navLabel}>Perfil</Text>
-          </Pressable>
-        </View>
-      </View>
     </View>
   );
 }

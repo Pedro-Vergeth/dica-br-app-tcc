@@ -9,7 +9,6 @@ import { PieChart } from "react-native-gifted-charts";
 import AppHeader from "../../components/AppHeader";
 import { loadProfileSummary, type ProfileSummary } from "../../services/profileStorage";
 import { getMealRecords, type MealRecord } from "../../services/mealLogService";
-import { styles as homeStyles } from "../../styles/HomeScreenStyles";
 import { styles } from "../../styles/ProfileHomeScreenStyles";
 
 function isToday(timestamp: number): boolean {
@@ -187,39 +186,6 @@ export default function ProfileHomeScreen() {
         <View style={styles.bottomSpacer} />
       </View>
 
-      <View style={homeStyles.bottomNav}>
-        <View style={homeStyles.bottomNavRow}>
-          <Pressable style={homeStyles.navItem} onPress={() => router.replace("/home")}> 
-            <Image source={require("../../../assets/images/navbar/home.png")} resizeMode="contain" style={homeStyles.navIconImage} />
-            <Text style={homeStyles.navLabel}>Início</Text>
-          </Pressable>
-
-          <Pressable style={homeStyles.navItem} onPress={() => router.push("/recipes")}> 
-            <Image source={require("../../../assets/images/navbar/receitas.png")} resizeMode="contain" style={homeStyles.navIconImage} />
-            <Text style={homeStyles.navLabel}>Receitas</Text>
-          </Pressable>
-
-          <Pressable style={homeStyles.navCenterPressable} onPress={() => router.push("/search")}> 
-            <View style={homeStyles.navCenterGroup}>
-              <View style={homeStyles.navCenterHalo} />
-              <View style={homeStyles.navCenterButton}>
-                <Ionicons name="search" size={24} color="#FFFFFF" />
-              </View>
-              <Text style={homeStyles.navCenterLabel}>Pesquisar</Text>
-            </View>
-          </Pressable>
-
-          <Pressable style={homeStyles.navItem} onPress={() => router.push("/library")}>
-            <Image source={require("../../../assets/images/navbar/biblioteca.png")} resizeMode="contain" style={homeStyles.navIconImage} />
-            <Text style={homeStyles.navLabel}>Biblioteca</Text>
-          </Pressable>
-
-          <Pressable style={homeStyles.navItem} onPress={() => router.push("/profile-home")}>
-            <Image source={require("../../../assets/images/navbar/perfil.png")} resizeMode="contain" style={homeStyles.navIconImage} />
-            <Text style={homeStyles.navLabel}>Perfil</Text>
-          </Pressable>
-        </View>
-      </View>
     </View>
   );
 }
