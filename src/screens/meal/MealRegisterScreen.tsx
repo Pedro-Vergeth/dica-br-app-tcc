@@ -167,7 +167,7 @@ function SelectedFoodRow({
         </Text>
         <HeartAmount value={item.heartQuantity} size={14} color={item.heartColor ?? "#01AB51"} />
         <Text style={styles.selectedFoodQuantityText}>
-          {formatFoodBaseQuantity(item.quantity * item.heartQuantity, item.unit)}
+          {formatFoodBaseQuantity(item.quantity * item.heartQuantity, item.medidaCaseira ?? item.unit)}
         </Text>
       </View>
       <Pressable style={styles.selectedFoodRemoveBtn} onPress={onRemove} accessibilityRole="button">
@@ -179,10 +179,8 @@ function SelectedFoodRow({
 
 function formatPopupPortionLabel(item: SearchFoodItem, portion: number): string {
   const physicalQty = readFoodQuantity(item) * portion;
-  const unit = readFoodUnit(item);
-  const qtyText = formatFoodBaseQuantity(physicalQty, unit);
   const medidaCaseira = item.medidaCaseira?.trim() ?? item.medidacaseira?.trim() ?? null;
-  return medidaCaseira ? `${qtyText} (${medidaCaseira})` : qtyText;
+  return formatFoodBaseQuantity(physicalQty, medidaCaseira ?? readFoodUnit(item));
 }
 
 function HeartAmount({
@@ -280,6 +278,7 @@ export default function MealRegisterScreen() {
     const id = `${item.nomePrincipal.trim().toLowerCase()}|${item.grupoAlimentar.trim().toLowerCase()}|${Date.now()}`;
     const quantity = readFoodQuantity(item);
     const unit = readFoodUnit(item);
+    const medidaCaseira = item.medidaCaseira?.trim() ?? item.medidacaseira?.trim() ?? undefined;
 
     setSelectedFoods((currentFoods) => [
       ...currentFoods,
@@ -291,6 +290,7 @@ export default function MealRegisterScreen() {
         heartColor: item.heartColor,
         quantity,
         unit,
+        medidaCaseira,
         heartQuantity,
       },
     ]);
@@ -389,9 +389,11 @@ export default function MealRegisterScreen() {
     <View style={styles.screen}>
       <ExpoStatusBar style="dark" translucent />
 
-      <View style={styles.content}>
+      <View style={{ paddingHorizontal: 24, paddingTop: 24 }}>
         <BackHeader title="Registro alimentar" onBackPress={() => router.back()} />
+      </View>
 
+      <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
           <View style={styles.mainContent}>
             <Text style={styles.pageTitle}>{todayLabel}</Text>

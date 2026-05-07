@@ -19,6 +19,7 @@ export type MealFoodEntry = {
   heartColor?: string;
   quantity: number;
   unit: string;
+  medidaCaseira?: string;
   heartQuantity: number;
   createdAt?: number;
 };

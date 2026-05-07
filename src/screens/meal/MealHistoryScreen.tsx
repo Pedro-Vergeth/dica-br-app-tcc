@@ -160,12 +160,11 @@ export default function MealHistoryScreen() {
     <View style={styles.screen}>
       <ExpoStatusBar style="dark" translucent />
 
-      <View style={styles.content}>
-        <BackHeader
-          title="Diário alimentar"
-          onBackPress={() => router.back()}
-        />
+      <View style={{ paddingHorizontal: 24, paddingTop: 24 }}>
+        <BackHeader title="Diário alimentar" onBackPress={() => router.back()} />
+      </View>
 
+      <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
           <Pressable style={styles.primaryAction} onPress={() => router.push("/meal-register")} accessibilityRole="button">
             <Ionicons name="add" size={20} color="#FFFFFF" />
