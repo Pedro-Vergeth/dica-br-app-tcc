@@ -22,6 +22,10 @@ function isToday(timestamp: number): boolean {
   );
 }
 
+function formatHeartCount(value: number): string {
+  return Number.isInteger(value) ? String(value) : value.toFixed(1);
+}
+
 function getTodayHearts(records: MealRecord[]) {
   const result = { verde: 0, azul: 0, amarelo: 0 };
   for (const record of records.filter((r) => isToday(r.createdAt))) {
@@ -148,11 +152,14 @@ export default function ProfileHomeScreen() {
             <View style={styles.chartItem}>
               <PieChart
                 data={[
-                  { value: summary.goalPlan.greenCount, color: "#4BB05B" },
-                  { value: summary.goalPlan.blueCount, color: "#0F5F9A" },
-                  { value: summary.goalPlan.yellowCount, color: "#F7C300" },
+                  { value: summary.goalPlan.greenCount, color: "#4BB05B", text: String(summary.goalPlan.greenCount) },
+                  { value: summary.goalPlan.blueCount, color: "#0F5F9A", text: String(summary.goalPlan.blueCount) },
+                  { value: summary.goalPlan.yellowCount, color: "#F7C300", text: String(summary.goalPlan.yellowCount) },
                 ]}
                 radius={65}
+                showText
+                textColor="#FFFFFF"
+                textSize={13}
               />
               <Text style={styles.chartLabel}>Seu consumo ideal</Text>
             </View>
@@ -161,13 +168,16 @@ export default function ProfileHomeScreen() {
                 data={
                   todayHearts.verde + todayHearts.azul + todayHearts.amarelo > 0
                     ? [
-                        { value: todayHearts.verde, color: "#4BB05B" },
-                        { value: todayHearts.azul, color: "#0F5F9A" },
-                        { value: todayHearts.amarelo, color: "#F7C300" },
-                      ]
-                    : [{ value: 1, color: "#E0E0E0" }]
+                        todayHearts.verde > 0 ? { value: todayHearts.verde, color: "#4BB05B", text: formatHeartCount(todayHearts.verde) } : null,
+                        todayHearts.azul > 0 ? { value: todayHearts.azul, color: "#0F5F9A", text: formatHeartCount(todayHearts.azul) } : null,
+                        todayHearts.amarelo > 0 ? { value: todayHearts.amarelo, color: "#F7C300", text: formatHeartCount(todayHearts.amarelo) } : null,
+                      ].filter(Boolean) as { value: number; color: string; text: string }[]
+                    : [{ value: 1, color: "#E0E0E0", text: "" }]
                 }
                 radius={65}
+                showText
+                textColor="#FFFFFF"
+                textSize={13}
               />
               <Text style={styles.chartLabel}>Seu consumo hoje</Text>
             </View>

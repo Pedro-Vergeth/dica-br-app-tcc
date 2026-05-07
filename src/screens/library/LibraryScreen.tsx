@@ -30,7 +30,7 @@ const posterPalette = [
 ];
 
 function SearchIcon() {
-  return <NavbarSearchIcon width={18} height={18} color="#145FA0" />;
+  return <Ionicons name="search" size={18} color="#145FA0" />;
 }
 
 function sortVideos(videos: EducationalVideoItem[], sort: SortOption) {

@@ -26,18 +26,11 @@ function toImageUri(imagem64: string) {
 }
 
 function SearchIcon() {
-  return (
-    <NavbarSearchIcon width={18} height={18} color="#145FA0" />
-  );
+  return <Ionicons name="search" size={18} color="#145FA0" />;
 }
 
 function CameraButton() {
-  return (
-    <View style={styles.cameraIcon}>
-      <View style={styles.cameraIconTop} />
-      <View style={styles.cameraIconLens} />
-    </View>
-  );
+  return <Ionicons name="camera-outline" size={20} color="#FFFFFF" />;
 }
 
 function SearchResultCard({
