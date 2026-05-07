@@ -88,7 +88,7 @@ export async function fetchFoodsByGroup(grupoAlimentar: string): Promise<SearchF
 
   try {
     const { data: payload } = await apiClient.get<unknown>("alimento", {
-      params: { grupoAlimentar },
+      params: { grupoAlimentar, size: 100 },
     });
     console.log("[searchFoodService] fetchFoodsByGroup", grupoAlimentar, "count:", Array.isArray(payload) ? payload.length : "?");
     return normalizeApiPayload(payload);

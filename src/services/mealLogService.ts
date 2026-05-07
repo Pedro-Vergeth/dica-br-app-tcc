@@ -129,11 +129,12 @@ function fromRow(row: MealRecordRow): MealRecord {
             heartColor: typeof candidate.heartColor === "string" ? candidate.heartColor : undefined,
             quantity: typeof candidate.quantity === "number" ? candidate.quantity : Number(candidate.quantity ?? 0),
             unit: String(candidate.unit ?? ""),
+            medidaCaseira: typeof candidate.medidaCaseira === "string" && candidate.medidaCaseira ? candidate.medidaCaseira : undefined,
             heartQuantity: typeof candidate.heartQuantity === "number" ? candidate.heartQuantity : Number(candidate.heartQuantity ?? 0),
             createdAt: typeof candidate.createdAt === "number" ? candidate.createdAt : undefined,
           };
         })
-        .filter((entry): entry is MealFoodEntry => Boolean(entry));
+        .filter(Boolean) as MealFoodEntry[];
     }
   } catch {
     foods = [];

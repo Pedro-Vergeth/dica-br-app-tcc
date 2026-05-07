@@ -14,7 +14,6 @@ export const styles = StyleSheet.create({
   logoRow: {
     position: "relative",
     marginHorizontal: -24,
-    marginBottom: 22,
     paddingHorizontal: 24,
     paddingTop: 14,
     paddingBottom: 20,
@@ -23,7 +22,6 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    alignItems: "center",
     gap: 10,
     marginBottom: 18,
   },

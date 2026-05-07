@@ -222,4 +222,21 @@ export const styles = StyleSheet.create({
     flex: 1,
     minHeight: 0,
   },
+  chartsRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  chartItem: {
+    alignItems: "center",
+    gap: 10,
+  },
+  chartLabel: {
+    color: "#085491",
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "600" as const,
+    textAlign: "center" as const,
+  },
 });

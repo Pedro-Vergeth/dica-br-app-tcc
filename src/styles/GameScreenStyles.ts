@@ -30,6 +30,10 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  titleWrap: {
+    flex: 1,
+    alignItems: "flex-end",
+  },
   backButtonIcon: {
     color: "#01AB51",
     fontSize: 28,

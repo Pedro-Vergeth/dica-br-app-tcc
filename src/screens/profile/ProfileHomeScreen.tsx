@@ -4,11 +4,35 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
+import { PieChart } from "react-native-gifted-charts";
 
 import AppHeader from "../../components/AppHeader";
 import { loadProfileSummary, type ProfileSummary } from "../../services/profileStorage";
+import { getMealRecords, type MealRecord } from "../../services/mealLogService";
 import { styles as homeStyles } from "../../styles/HomeScreenStyles";
 import { styles } from "../../styles/ProfileHomeScreenStyles";
+
+function isToday(timestamp: number): boolean {
+  const today = new Date();
+  const date = new Date(timestamp);
+  return (
+    date.getFullYear() === today.getFullYear() &&
+    date.getMonth() === today.getMonth() &&
+    date.getDate() === today.getDate()
+  );
+}
+
+function getTodayHearts(records: MealRecord[]) {
+  const result = { verde: 0, azul: 0, amarelo: 0 };
+  for (const record of records.filter((r) => isToday(r.createdAt))) {
+    for (const food of record.foods) {
+      if (food.heartColor === "#4BB05B") result.verde += food.heartQuantity;
+      else if (food.heartColor === "#0F5F9A") result.azul += food.heartQuantity;
+      else if (food.heartColor === "#F7C300") result.amarelo += food.heartQuantity;
+    }
+  }
+  return result;
+}
 
 function GoalBadge({ color, value }: { color: string; value: number }) {
   return (
@@ -22,6 +46,7 @@ export default function ProfileHomeScreen() {
   const router = useRouter();
   const [summary, setSummary] = React.useState<ProfileSummary | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const [todayHearts, setTodayHearts] = React.useState({ verde: 0, azul: 0, amarelo: 0 });
 
   useFocusEffect(
     React.useCallback(() => {
@@ -41,6 +66,8 @@ export default function ProfileHomeScreen() {
         }
 
         setSummary(storedProfile);
+        const mealRecords = await getMealRecords();
+        if (isActive) setTodayHearts(getTodayHearts(mealRecords));
         setLoading(false);
       };
 
@@ -117,8 +144,33 @@ export default function ProfileHomeScreen() {
         <View style={styles.analyticsBlock}>
           <Text style={styles.sectionBlockTitle}>Análise Gráfica</Text>
           <Text style={styles.analyticsSubtitle}>Meta vs. Realidade: Acompanhe seu progresso diário</Text>
-          <View style={styles.analyticsPlaceholder}>
-            <Text style={styles.analyticsPlaceholderText}>Gráficos em breve</Text>
+          <View style={styles.chartsRow}>
+            <View style={styles.chartItem}>
+              <PieChart
+                data={[
+                  { value: summary.goalPlan.greenCount, color: "#4BB05B" },
+                  { value: summary.goalPlan.blueCount, color: "#0F5F9A" },
+                  { value: summary.goalPlan.yellowCount, color: "#F7C300" },
+                ]}
+                radius={65}
+              />
+              <Text style={styles.chartLabel}>Seu consumo ideal</Text>
+            </View>
+            <View style={styles.chartItem}>
+              <PieChart
+                data={
+                  todayHearts.verde + todayHearts.azul + todayHearts.amarelo > 0
+                    ? [
+                        { value: todayHearts.verde, color: "#4BB05B" },
+                        { value: todayHearts.azul, color: "#0F5F9A" },
+                        { value: todayHearts.amarelo, color: "#F7C300" },
+                      ]
+                    : [{ value: 1, color: "#E0E0E0" }]
+                }
+                radius={65}
+              />
+              <Text style={styles.chartLabel}>Seu consumo hoje</Text>
+            </View>
           </View>
         </View>
 
