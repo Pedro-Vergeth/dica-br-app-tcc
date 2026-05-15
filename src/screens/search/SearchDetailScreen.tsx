@@ -1,11 +1,11 @@
 import React from "react";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import BackHeader from "../../components/BackHeader";
-import { fetchSearchFoods, type SearchFoodItem } from "../../services/searchFoodService";
+import { fetchFoodsByGroup, fetchSearchFoods, type SearchFoodItem } from "../../services/searchFoodService";
 import { styles } from "../../styles/SearchDetailScreenStyles";
 
 type DetailParams = {
@@ -15,11 +15,8 @@ type DetailParams = {
 
 type DetailItem = SearchFoodItem & {
   sinonimos?: string | string[];
-  porcao?: string;
-  porcaoPorUnidade?: string;
-  porcao_por_unidade?: string;
-  medidaCaseira?: string;
-  medidacaseira?: string;
+  qtdMedidaCaseira?: number;
+  unidadeMedidaCaseira?: string;
   textoInformativo?: string;
 };
 
@@ -78,28 +75,6 @@ function readFoodField(item: DetailItem | null, key: keyof DetailItem, fallback 
   return readText(item[key], fallback);
 }
 
-function readMeasureField(item: DetailItem | null) {
-  if (!item) {
-    return "Não informado";
-  }
-
-  const measure = readText(item.medidaCaseira, "") || readText(item.medidacaseira, "");
-  return measure || "Não informado";
-}
-
-function readPortionField(item: DetailItem | null) {
-  if (!item) {
-    return "Não informado";
-  }
-
-  const portionByUnit =
-    readText(item.porcaoPorUnidade, "") ||
-    readText(item.porcao_por_unidade, "") ||
-    readText(item.porcao, "");
-
-  return portionByUnit || "Não informado";
-}
-
 export default function SearchDetailScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<DetailParams>();
@@ -109,6 +84,7 @@ export default function SearchDetailScreen() {
   const [item, setItem] = React.useState<DetailItem | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [groupFoods, setGroupFoods] = React.useState<SearchFoodItem[]>([]);
 
   React.useEffect(() => {
     let isActive = true;
@@ -158,14 +134,51 @@ export default function SearchDetailScreen() {
     };
   }, [grupoAlimentarParam, nomePrincipalParam]);
 
+  React.useEffect(() => {
+    let isActive = true;
+
+    async function loadGroupFoods() {
+      const activeGroup = item?.grupoAlimentar?.trim() || grupoAlimentarParam.trim();
+
+      if (!activeGroup) {
+        if (isActive) {
+          setGroupFoods([]);
+        }
+
+        return;
+      }
+
+      const foods = await fetchFoodsByGroup(activeGroup, 4);
+      const currentName = nomePrincipalParam.trim().toLowerCase();
+
+      const filteredFoods = foods
+        .filter((food) => food.nomePrincipal.trim().toLowerCase() !== currentName)
+        .slice(0, 4);
+
+      if (isActive) {
+        setGroupFoods(filteredFoods);
+      }
+    }
+
+    void loadGroupFoods();
+
+    return () => {
+      isActive = false;
+    };
+  }, [grupoAlimentarParam, item?.grupoAlimentar, nomePrincipalParam]);
+
   const nomePrincipal = item?.nomePrincipal?.trim() || nomePrincipalParam || "Alimento selecionado";
   const grupoAlimentar = "Grupo " + (item?.grupoAlimentar?.trim().toLowerCase() || grupoAlimentarParam || "Grupo alimentar não informado");
   const imageUri = item?.imagem64 ? toImageUri(item.imagem64) : "";
   const heartColor = item?.heartColor?.trim() || "#01AB51";
-  const portionText = readPortionField(item);
   const synonymValues = toList(item?.sinonimos);
   const informationText = readFoodField(item, "textoInformativo", "Não informado");
-  const houseMeasure = readMeasureField(item);
+
+  const portionQty = item?.qtdParaUmCoracao ?? null;
+  const portionUnit = item?.unidade?.trim() || null;
+
+  const measureQty = item?.qtdMedidaCaseira ?? null;
+  const measureUnit = item?.unidadeMedidaCaseira?.trim() || null;
 
   return (
     <View style={styles.screen}>
@@ -204,8 +217,17 @@ export default function SearchDetailScreen() {
               </View>
 
               <View style={styles.sectionBlock}>
-                <Text style={styles.sectionTitle}>Porção por unidade</Text>
-                <Text style={styles.sectionValue}>{portionText}</Text>
+                <Text style={styles.sectionTitle}>Porção</Text>
+                <View style={styles.valueRow}>
+                  <Text style={styles.valueNumber}>
+                    {portionQty != null ? String(portionQty) : "—"}
+                  </Text>
+                  <Text style={styles.valueUnit}>{portionUnit ?? ""}</Text>
+                  <Text style={styles.valueNumber}>
+                    {measureQty != null ? String(measureQty) : "—"}
+                  </Text>
+                  <Text style={styles.valueUnit}>{measureUnit ? `(${measureUnit})` : ""}</Text>
+                </View>
               </View>
 
               <View style={styles.sectionBlock}>
@@ -214,13 +236,19 @@ export default function SearchDetailScreen() {
               </View>
 
               <View style={styles.sectionBlock}>
-                <Text style={styles.sectionTitle}>Medida caseira</Text>
-                <Text style={styles.sectionValue}>{houseMeasure}</Text>
-              </View>
-
-              <View style={styles.sectionBlock}>
-                <Text style={styles.sectionTitle}>Texto informativo</Text>
-                <Text style={styles.sectionBody}>{informationText}</Text>
+                <Text style={styles.sectionTitle}>Alimentos do mesmo grupo</Text>
+                {groupFoods.length > 0 ? (
+                  <View style={styles.bulletList}>
+                    {groupFoods.map((food) => (
+                      <View key={food.nomePrincipal} style={styles.bulletRow}>
+                        <Text style={styles.bulletMark}>•</Text>
+                        <Text style={styles.bulletText}>{food.nomePrincipal}</Text>
+                      </View>
+                    ))}
+                  </View>
+                ) : (
+                  <Text style={styles.sectionBody}>Não informado</Text>
+                )}
               </View>
             </>
           ) : null}

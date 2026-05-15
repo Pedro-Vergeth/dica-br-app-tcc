@@ -35,13 +35,8 @@ type ShoppingItem = {
 };
 
 function readFoodQuantity(item: SearchFoodItem): number {
-  const candidate = item.quantidade;
-  if (typeof candidate === "number" && Number.isFinite(candidate)) return candidate;
-  if (typeof candidate === "string" && candidate.trim()) {
-    const v = Number(candidate.replace(",", "."));
-    return Number.isFinite(v) ? v : 1;
-  }
-  return 1;
+  const qty = item.qtdParaUmCoracao;
+  return typeof qty === "number" && Number.isFinite(qty) ? qty : 1;
 }
 
 function readFoodUnit(item: SearchFoodItem): string {
@@ -50,8 +45,8 @@ function readFoodUnit(item: SearchFoodItem): string {
 
 function formatPopupPortionLabel(item: SearchFoodItem, portion: number): string {
   const physicalQty = readFoodQuantity(item) * portion;
-  const medidaCaseira = item.medidaCaseira?.trim() ?? item.medidacaseira?.trim() ?? null;
-  return formatFoodBaseQuantity(physicalQty, medidaCaseira ?? readFoodUnit(item));
+  const unit = item.unidadeMedidaCaseira?.trim() || readFoodUnit(item);
+  return formatFoodBaseQuantity(physicalQty, unit);
 }
 
 function PopupResultRow({
@@ -238,7 +233,7 @@ export default function ShoppingListScreen() {
     const timer = setTimeout(() => {
       setSearchLoading(true);
       setSearchError(null);
-      fetchSearchFoods(query)
+      fetchSearchFoods(query, { excludeRedGroup: true })
         .then((data) => {
           setResults(data);
           setSearchLoading(false);
@@ -294,7 +289,7 @@ export default function ShoppingListScreen() {
       heartColor: item.heartColor,
       quantity: readFoodQuantity(item),
       unit: readFoodUnit(item),
-      medidaCaseira: item.medidaCaseira?.trim() ?? item.medidacaseira?.trim() ?? undefined,
+      medidaCaseira: item.unidadeMedidaCaseira?.trim() ?? undefined,
       heartQuantity: portion,
     }));
     setItems((prev) => [...prev, ...newItems]);
@@ -311,7 +306,7 @@ export default function ShoppingListScreen() {
         heartColor: item.heartColor,
         quantity: readFoodQuantity(item),
         unit: readFoodUnit(item),
-        medidaCaseira: item.medidaCaseira?.trim() ?? item.medidacaseira?.trim() ?? undefined,
+        medidaCaseira: item.unidadeMedidaCaseira?.trim() ?? undefined,
         heartQuantity: 1,
       },
     ]);

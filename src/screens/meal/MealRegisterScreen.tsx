@@ -35,18 +35,8 @@ function toImageUri(imagem64: string) {
 }
 
 function readFoodQuantity(item: SearchFoodItem) {
-  const candidate = item.quantidade;
-
-  if (typeof candidate === "number" && Number.isFinite(candidate)) {
-    return candidate;
-  }
-
-  if (typeof candidate === "string" && candidate.trim()) {
-    const parsedValue = Number(candidate.replace(",", "."));
-    return Number.isFinite(parsedValue) ? parsedValue : 1;
-  }
-
-  return 1;
+  const qty = item.qtdParaUmCoracao;
+  return typeof qty === "number" && Number.isFinite(qty) ? qty : 1;
 }
 
 function readFoodUnit(item: SearchFoodItem) {
@@ -167,7 +157,12 @@ function SelectedFoodRow({
         </Text>
         <HeartAmount value={item.heartQuantity} size={14} color={item.heartColor ?? "#01AB51"} />
         <Text style={styles.selectedFoodQuantityText}>
-          {formatFoodBaseQuantity(item.quantity * item.heartQuantity, item.medidaCaseira ?? item.unit)}
+          {formatPortionLabel(
+            item.quantity * item.heartQuantity,
+            item.unit,
+            item.qtdMedidaCaseira != null ? item.qtdMedidaCaseira * item.heartQuantity : undefined,
+            item.medidaCaseira,
+          )}
         </Text>
       </View>
       <Pressable style={styles.selectedFoodRemoveBtn} onPress={onRemove} accessibilityRole="button">
@@ -177,10 +172,25 @@ function SelectedFoodRow({
   );
 }
 
+function formatPortionLabel(
+  qty: number,
+  unit: string,
+  measureQty: number | undefined,
+  measureUnit: string | undefined,
+): string {
+  const mainPart = formatFoodBaseQuantity(qty, unit);
+  if (measureQty != null && Number.isFinite(measureQty) && measureUnit?.trim()) {
+    return `${mainPart} (${formatFoodBaseQuantity(measureQty, measureUnit.trim())})`;
+  }
+  return mainPart;
+}
+
 function formatPopupPortionLabel(item: SearchFoodItem, portion: number): string {
-  const physicalQty = readFoodQuantity(item) * portion;
-  const medidaCaseira = item.medidaCaseira?.trim() ?? item.medidacaseira?.trim() ?? null;
-  return formatFoodBaseQuantity(physicalQty, medidaCaseira ?? readFoodUnit(item));
+  const qty = readFoodQuantity(item) * portion;
+  const unit = readFoodUnit(item);
+  const measureQty = item.qtdMedidaCaseira != null ? item.qtdMedidaCaseira * portion : undefined;
+  const measureUnit = item.unidadeMedidaCaseira?.trim();
+  return formatPortionLabel(qty, unit, measureQty, measureUnit);
 }
 
 function HeartAmount({
@@ -242,7 +252,7 @@ export default function MealRegisterScreen() {
     }
 
     try {
-      const foods = await fetchSearchFoods(normalizedSearch);
+      const foods = await fetchSearchFoods(normalizedSearch, { excludeRedGroup: true });
       setResults(foods);
       setError(null);
     } catch (searchError) {
@@ -278,7 +288,8 @@ export default function MealRegisterScreen() {
     const id = `${item.nomePrincipal.trim().toLowerCase()}|${item.grupoAlimentar.trim().toLowerCase()}|${Date.now()}`;
     const quantity = readFoodQuantity(item);
     const unit = readFoodUnit(item);
-    const medidaCaseira = item.medidaCaseira?.trim() ?? item.medidacaseira?.trim() ?? undefined;
+    const medidaCaseira = item.unidadeMedidaCaseira?.trim() ?? undefined;
+    const qtdMedidaCaseira = item.qtdMedidaCaseira ?? undefined;
 
     setSelectedFoods((currentFoods) => [
       ...currentFoods,
@@ -291,6 +302,7 @@ export default function MealRegisterScreen() {
         quantity,
         unit,
         medidaCaseira,
+        qtdMedidaCaseira,
         heartQuantity,
       },
     ]);

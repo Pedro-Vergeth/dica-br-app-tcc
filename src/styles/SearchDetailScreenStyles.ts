@@ -142,4 +142,21 @@ export const styles = StyleSheet.create({
   mutedText: {
     color: "#6E6E6E",
   },
+  valueRow: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    gap: 10,
+  },
+  valueNumber: {
+    fontSize: 19,
+    lineHeight: 23,
+    color: "#6C6C6C",
+    fontWeight: "700",
+  },
+  valueUnit: {
+    fontSize: 19,
+    lineHeight: 23,
+    color: "#6C6C6C",
+    fontWeight: "500",
+  },
 });

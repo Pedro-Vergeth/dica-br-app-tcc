@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable, Text, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import * as ImagePicker from "expo-image-picker";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 
@@ -15,6 +16,18 @@ export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+
+  const analyzeImage = React.useCallback(
+    async (imageUri: string) => {
+      const recognizedName = await recognizeFoodFromImage(imageUri);
+
+      router.replace({
+        pathname: "/search",
+        params: { query: recognizedName },
+      });
+    },
+    [router],
+  );
 
   const takePicture = React.useCallback(async () => {
     if (!cameraRef.current || loading) {
@@ -31,16 +44,44 @@ export default function CameraScreen() {
         throw new Error("Não foi possível capturar a imagem.");
       }
 
-      const recognizedName = await recognizeFoodFromImage(photo.uri);
-      router.replace({
-        pathname: "/search",
-        params: { query: recognizedName },
-      });
+      await analyzeImage(photo.uri);
     } catch (captureError) {
       setError(captureError instanceof Error ? captureError.message : "Alimento não identificado");
       setLoading(false);
     }
-  }, [loading, router]);
+  }, [analyzeImage, loading]);
+
+  const uploadImage = React.useCallback(async () => {
+    if (loading) {
+      return;
+    }
+
+    setError(null);
+
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (!permissionResult.granted) {
+        throw new Error("Permissão da galeria necessária");
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 0.7,
+        allowsEditing: false,
+      });
+
+      if (result.canceled || !result.assets?.[0]?.uri) {
+        return;
+      }
+
+      setLoading(true);
+      await analyzeImage(result.assets[0].uri);
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : "Não foi possível selecionar a imagem.");
+      setLoading(false);
+    }
+  }, [analyzeImage, loading]);
 
   if (!permission) {
     return <View style={styles.screen} />;
@@ -99,7 +140,13 @@ export default function CameraScreen() {
         </View>
 
         <View style={styles.bottomActions} pointerEvents="box-none">
-          <Pressable style={styles.galleryButton} accessibilityRole="button">
+          <Pressable
+            style={styles.galleryButton}
+            onPress={() => void uploadImage()}
+            accessibilityRole="button"
+            accessibilityLabel="Carregar imagem da galeria"
+            disabled={loading}
+          >
             <Ionicons name="image-outline" size={22} color="#2E2E2E" />
           </Pressable>
 

@@ -1,30 +1,48 @@
 import React from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 
 import AppHeader from "../../components/AppHeader";
 import { loadProfileSummary } from "../../services/profileStorage";
+import { loadSelectedState } from "../../services/onboardingStorage";
+import { fetchRecipes, type RecipeItem } from "../../services/recipeService";
+import { styles as profileStyles } from "../../styles/ProfileScreenStyles";
 import { styles } from "../../styles/HomeScreenStyles";
 
 export default function HomeScreen() {
   const router = useRouter();
   const [hasProfile, setHasProfile] = React.useState<boolean | null>(null);
+  const [recipes, setRecipes] = React.useState<RecipeItem[]>([]);
 
   useFocusEffect(
     React.useCallback(() => {
       let isActive = true;
 
-      const resolveProfileState = async () => {
-        const storedProfile = await loadProfileSummary();
+      const load = async () => {
+        const [storedProfile, storedState] = await Promise.all([
+          loadProfileSummary(),
+          loadSelectedState(),
+        ]);
 
-        if (isActive) {
-          setHasProfile(Boolean(storedProfile));
+        if (!isActive) return;
+
+        setHasProfile(Boolean(storedProfile));
+
+        try {
+          const data = await fetchRecipes({
+            page: 0,
+            size: 5,
+            estadoId: storedState?.id ?? undefined,
+          });
+          if (isActive) setRecipes(data);
+        } catch {
+          if (isActive) setRecipes([]);
         }
       };
 
-      void resolveProfileState();
+      void load();
 
       return () => {
         isActive = false;
@@ -40,17 +58,19 @@ export default function HomeScreen() {
         <AppHeader title="Início" />
 
         {hasProfile === false ? (
-          <Pressable style={styles.profileCard} onPress={() => router.push("/profile")}>
-            <View style={styles.profileCardTextWrap}>
-              <Text style={styles.profileCardTitle}>Personalize sua dieta</Text>
-              <Text style={styles.profileCardText}>
-                Informe sua altura, peso e idade para calcular seu IMC e suas metas diárias de alimentação.
-              </Text>
-              <View style={styles.profileButton}>
-                <Text style={styles.profileButtonText}>Configurar perfil</Text>
+          <Pressable style={profileStyles.setupCard} onPress={() => router.push("/profile") }>
+            <View style={profileStyles.setupCardTextWrap}>
+              <Text style={profileStyles.setupCardTitle}>Personalize sua alimentação</Text>
+              <View>
+                <Text style={profileStyles.setupCardText}>
+                  Informe sua altura, peso e idade para calcular seu Índice de Massa Corporal (IMC) e descubra suas metas diárias baseadas na alimentação cardioprotetora.
+                </Text>
+                <Pressable style={profileStyles.actionButton} onPress={() => router.push("/profile-setup") }>
+                  <Text style={profileStyles.actionButtonText}>Configurar perfil</Text>
+                </Pressable>
               </View>
             </View>
-            <View style={styles.profileIllustration} />
+            <Image source={require("../../../assets/images/profile/image.png")} resizeMode="contain" style={profileStyles.setupCardImage} />
           </Pressable>
         ) : null}
 
@@ -60,44 +80,79 @@ export default function HomeScreen() {
             <Text style={styles.sectionHeaderAction}>Ver tudo</Text>
           </Pressable>
         </View>
-
-        <View style={styles.suggestionGrid}>
-          <Pressable
-            style={[styles.suggestionCard, { backgroundColor: "#0A7B3D" }]}
-            onPress={() => router.push("/recipes")}
+        <View style={styles.carouselWrap}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.carouselContent}
+            style={styles.carousel}
           >
-            <View style={styles.suggestionTop}>
-              <Text style={styles.suggestionLabel}>Como funciona a dieta</Text>
-              <Text style={styles.suggestionMeta}>⏱ 2 min</Text>
-            </View>
-          </Pressable>
-
-          <Pressable
-            style={[styles.suggestionCard, styles.suggestionCardSecondary]}
-            onPress={() => router.push("/recipes")}
-          >
-            <View style={styles.suggestionTop}>
-              <Text style={[styles.suggestionLabel, styles.suggestionLabelDark]}>
-                Abacate: conheça os benefícios
-              </Text>
-              <Text style={styles.suggestionMeta}>📖 Leitura</Text>
-            </View>
-          </Pressable>
+            {recipes.length === 0 ? (
+              <Text style={styles.carouselEmpty}>Nenhuma sugestão disponível</Text>
+            ) : (
+              recipes.map((recipe) => (
+                <Pressable
+                  key={recipe.id}
+                  style={styles.recipeCard}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/recipe-details",
+                      params: { recipeId: recipe.id },
+                    })
+                  }
+                >
+                  {recipe.imagem64 ? (
+                    <Image
+                      source={{ uri: `data:image/png;base64,${recipe.imagem64}` }}
+                      style={styles.recipeCardImage}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View style={[styles.recipeCardImage, styles.recipeCardImagePlaceholder]} />
+                  )}
+                  <View style={styles.recipeCardContent}>
+                    <Text style={styles.recipeCardTitle} numberOfLines={2}>
+                      {recipe.titulo}
+                    </Text>
+                    {recipe.tempoPreparoMinutos ? (
+                      <Text style={styles.recipeCardMeta}>⏱ {recipe.tempoPreparoMinutos} min</Text>
+                    ) : recipe.tipoRefeicao ? (
+                      <Text style={styles.recipeCardMeta}>📋 {recipe.tipoRefeicao}</Text>
+                    ) : null}
+                  </View>
+                </Pressable>
+              ))
+            )}
+          </ScrollView>
         </View>
-
         <Text style={styles.sectionHeaderTitle}>Game Monte seu Prato</Text>
-        <View style={styles.gameCard}>
-          <View style={styles.gameCardContent}>
-            <Text style={styles.gameCardTitle}>VEJA SE APRENDEU</Text>
-            <Text style={styles.gameCardSubtitle}>Monte o seu Prato</Text>
-            <Pressable style={styles.gameButton} onPress={() => router.push("/game-intro")}>
-              <Text style={styles.gameButtonText}>Começar</Text>
-            </Pressable>
-          </View>
-          <View style={styles.plateCircle} />
-        </View>
-      </View>
+        <Pressable style={styles.gameCard} onPress={() => router.push("/game-intro")}>
+          <View style={styles.gameCardLeft}>
+            <View>
+              <View style={styles.gameTitleBox}>
+                <Text style={styles.gameCardTitle}>VEJA SE APRENDEU</Text>
+              </View>
 
+              <View style={styles.gameSubtitleBox}>
+                <Text style={styles.gameCardSubtitle}>Monte o seu Prato</Text>
+              </View>
+            </View>
+
+            <View style={styles.gameButtonWrap}>
+              <Text style={styles.gameButtonText}>Começar</Text>
+            </View>
+          </View>
+
+          <View style={styles.gameCardRight}>
+            <View style={styles.gamePlateWrap}>
+              <Image source={require("../../../assets/images/home/midPlate.png")} resizeMode="contain" style={styles.gamePlateImage} />
+            </View>
+            <View style={styles.gameFoodsWrap}>
+              <Image source={require("../../../assets/images/home/cardProfileFoods.png")} resizeMode="cover" style={styles.gameFoodsImage} />
+            </View>
+          </View>
+        </Pressable>
+      </View>
     </View>
   );
 }

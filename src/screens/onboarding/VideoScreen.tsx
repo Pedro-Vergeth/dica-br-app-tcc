@@ -5,18 +5,48 @@ import { useRouter } from "expo-router";
 import { VideoView, useVideoPlayer } from "expo-video";
 
 import { saveIntroSeen } from "../../services/onboardingStorage";
+import { fetchIntroductoryVideoSource } from "../../services/videoService";
 import { styles } from "../../styles/VideoScreenStyles";
 
 export default function VideoScreen() {
   const router = useRouter();
   const { width, height } = useWindowDimensions();
-  const player = useVideoPlayer(require("../../../assets/videos/videoDicabr.mp4"), (videoPlayer) => {
+  const [videoSource, setVideoSource] = React.useState<string | null>(null);
+
+  const player = useVideoPlayer(videoSource, (videoPlayer) => {
     videoPlayer.loop = true;
-    videoPlayer.play();
+
+    if (videoSource) {
+      videoPlayer.play();
+    }
   });
 
   React.useEffect(() => {
     void saveIntroSeen();
+  }, []);
+
+  React.useEffect(() => {
+    let isActive = true;
+
+    async function loadVideoSource() {
+      try {
+        const source = await fetchIntroductoryVideoSource();
+
+        if (isActive) {
+          setVideoSource(source);
+        }
+      } catch {
+        if (isActive) {
+          setVideoSource(null);
+        }
+      }
+    }
+
+    void loadVideoSource();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   return (

@@ -55,6 +55,25 @@ function SearchResultCard({
   );
 }
 
+function isRedGroup(group: string) {
+  const normalized = group
+    .trim()
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  return normalized.includes("VERMELHO");
+}
+
+function normalizeSearchText(value: string) {
+  return value
+    .trim()
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ");
+}
+
 export default function SearchScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ query?: string | string[] }>();
@@ -63,6 +82,23 @@ export default function SearchScreen() {
   const [loading, setLoading] = React.useState(false);
   const [searched, setSearched] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const redGroupItem = React.useMemo(() => {
+    const normalizedQuery = normalizeSearchText(query);
+
+    if (!normalizedQuery) {
+      return null;
+    }
+
+    return (
+      results.find(
+        (item) => isRedGroup(item.grupoAlimentar) && normalizeSearchText(item.nomePrincipal) === normalizedQuery,
+      ) ?? null
+    );
+  }, [query, results]);
+  const visibleResults = React.useMemo(
+    () => results.filter((item) => !isRedGroup(item.grupoAlimentar) || normalizeSearchText(item.nomePrincipal) === normalizeSearchText(query)),
+    [query, results],
+  );
 
   React.useEffect(() => {
     const routeQuery = Array.isArray(params.query) ? params.query[0] : params.query;
@@ -167,8 +203,22 @@ export default function SearchScreen() {
         ) : null}
 
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.resultsList}>
-          {results.length > 0 ? (
-            results.map((item, index) => (
+          {!loading && redGroupItem ? (
+            <View style={styles.redWarningState}>
+              <Ionicons name="heart" size={62} color="#E60000" style={styles.redWarningIcon} />
+
+              <Text style={styles.redWarningTitle}>“{redGroupItem.nomePrincipal}”</Text>
+              <Text style={styles.redWarningSubtitle}>EVITE O CONSUMO!</Text>
+              <Text style={styles.redWarningText}>
+                Este alimento está no grupo vermelho e não é recomendado para a saúde do coração.
+              </Text>
+
+              <Pressable onPress={() => router.push("/search-red-group")} accessibilityRole="link">
+                <Text style={styles.redWarningLink}>entenda mais sobre esse grupo alimentar!</Text>
+              </Pressable>
+            </View>
+          ) : visibleResults.length > 0 ? (
+            visibleResults.map((item, index) => (
               <SearchResultCard
                 key={`${item.nomePrincipal}-${index}`}
                 item={item}

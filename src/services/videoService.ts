@@ -13,6 +13,11 @@ export type FetchEducationalVideosParams = {
   size?: number;
 };
 
+type IntroductoryVideoResponse = Partial<{
+  id: number | string;
+  dadosFicheiroBase64: string;
+}>;
+
 type EducationalVideoResponseItem = Partial<{
   id: number | string;
   titulo: string;
@@ -86,6 +91,23 @@ function toVideoItem(item: EducationalVideoResponseItem): EducationalVideoItem |
     descricao,
     videoUrl,
   };
+}
+
+function extractIntroductoryVideoSource(payload: unknown) {
+  const candidate = payload && typeof payload === "object" ? (payload as { data?: unknown }) : null;
+  const videoPayload = candidate?.data ?? payload;
+  const videoRecord = videoPayload && typeof videoPayload === "object" ? (videoPayload as IntroductoryVideoResponse) : null;
+  const base64 = videoRecord?.dadosFicheiroBase64?.trim();
+
+  if (!base64) {
+    return null;
+  }
+
+  if (base64.startsWith("data:")) {
+    return base64;
+  }
+
+  return `data:video/mp4;base64,${base64}`;
 }
 
 export function formatVideoDuration(duracaoSegundos: number | null) {
@@ -162,4 +184,15 @@ export async function fetchEducationalVideoById(id: string): Promise<Educational
 
   const videos = await fetchEducationalVideos();
   return videos.find((item) => item.id === normalizedId) ?? null;
+}
+
+export async function fetchIntroductoryVideoSource(): Promise<string> {
+  const response = await apiClient.get<unknown>("video-introdutorio");
+  const videoSource = extractIntroductoryVideoSource(response.data);
+
+  if (!videoSource) {
+    throw new Error("Introductory video payload is missing dadosFicheiroBase64");
+  }
+
+  return videoSource;
 }

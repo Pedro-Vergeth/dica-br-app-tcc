@@ -123,6 +123,8 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    gap: 18,
+    marginLeft: -55,
   },
   galleryButton: {
     width: 44,
@@ -131,7 +133,6 @@ export const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 18,
   },
   captureButton: {
     width: 90,
@@ -142,7 +143,6 @@ export const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.95)",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 55,
   },
   captureButtonInner: {
     width: 72,

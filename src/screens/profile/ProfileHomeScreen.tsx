@@ -1,5 +1,5 @@
 import React from "react";
-import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
@@ -48,7 +48,6 @@ function GoalBadge({ color, value }: { color: string; value: number }) {
 export default function ProfileHomeScreen() {
   const router = useRouter();
   const [summary, setSummary] = React.useState<ProfileSummary | null>(null);
-  const [loading, setLoading] = React.useState(true);
   const [todayHearts, setTodayHearts] = React.useState({ verde: 0, azul: 0, amarelo: 0 });
 
   useFocusEffect(
@@ -56,7 +55,6 @@ export default function ProfileHomeScreen() {
       let isActive = true;
 
       const initialize = async () => {
-        setLoading(true);
         const storedProfile = await loadProfileSummary();
 
         if (!isActive) {
@@ -71,7 +69,6 @@ export default function ProfileHomeScreen() {
         setSummary(storedProfile);
         const mealRecords = await getMealRecords();
         if (isActive) setTodayHearts(getTodayHearts(mealRecords));
-        setLoading(false);
       };
 
       void initialize();
@@ -82,17 +79,14 @@ export default function ProfileHomeScreen() {
     }, [router]),
   );
 
-  if (loading || !summary) {
-    return (
-      <View style={styles.screen}>
-        <ExpoStatusBar style="dark" translucent />
-        <View style={styles.loadingWrap}>
-          <ActivityIndicator color="#145FA0" />
-          <Text style={styles.loadingText}>Carregando seu perfil...</Text>
-        </View>
-      </View>
-    );
-  }
+  const profileData = summary ?? {
+    bmi: 0,
+    goalPlan: {
+      greenCount: 0,
+      yellowCount: 0,
+      blueCount: 0,
+    },
+  };
 
   return (
     <View style={styles.screen}>
@@ -106,15 +100,15 @@ export default function ProfileHomeScreen() {
           <Text style={styles.profileCardTitle}>Olá, Bem-vindo</Text>
           <View style={styles.profileCardMetaRow}>
             <Text style={styles.profileCardMetaLabel}>IMC:</Text>
-            <Text style={styles.profileCardMetaValue}>{summary.bmi.toFixed(0)}</Text>
+            <Text style={styles.profileCardMetaValue}>{profileData.bmi.toFixed(0)}</Text>
           </View>
 
           <Text style={styles.goalHeading}>Sua Meta Diária:</Text>
 
           <View style={styles.goalRow}>
-            <GoalBadge color="#01AB51" value={summary.goalPlan.greenCount} />
-            <GoalBadge color="#085491" value={summary.goalPlan.blueCount} />
-            <GoalBadge color="#FAC800" value={summary.goalPlan.yellowCount} />
+            <GoalBadge color="#01AB51" value={profileData.goalPlan.greenCount} />
+            <GoalBadge color="#085491" value={profileData.goalPlan.blueCount} />
+            <GoalBadge color="#FAC800" value={profileData.goalPlan.yellowCount} />
           </View>
         </View>
 
@@ -150,11 +144,15 @@ export default function ProfileHomeScreen() {
           <View style={styles.chartsRow}>
             <View style={styles.chartItem}>
               <PieChart
-                data={[
-                  { value: summary.goalPlan.greenCount, color: "#4BB05B", text: String(summary.goalPlan.greenCount) },
-                  { value: summary.goalPlan.blueCount, color: "#0F5F9A", text: String(summary.goalPlan.blueCount) },
-                  { value: summary.goalPlan.yellowCount, color: "#F7C300", text: String(summary.goalPlan.yellowCount) },
-                ]}
+                data={
+                  summary
+                    ? [
+                        { value: profileData.goalPlan.greenCount, color: "#4BB05B", text: String(profileData.goalPlan.greenCount) },
+                        { value: profileData.goalPlan.blueCount, color: "#0F5F9A", text: String(profileData.goalPlan.blueCount) },
+                        { value: profileData.goalPlan.yellowCount, color: "#F7C300", text: String(profileData.goalPlan.yellowCount) },
+                      ]
+                    : [{ value: 1, color: "#E0E0E0", text: "" }]
+                }
                 radius={65}
                 showText
                 textColor="#FFFFFF"

@@ -244,8 +244,6 @@ export default function GameScreen() {
     let cancelled = false;
 
     async function loadFoods() {
-      console.log("[GameScreen] loading foods from API");
-
       try {
         const payload = await fetchGameFoods();
 
@@ -253,13 +251,10 @@ export default function GameScreen() {
           return;
         }
 
-        console.log("[GameScreen] foods received", payload.length);
-
         const normalizedFoods = payload.map((item, index) => {
           const zoneKey = toZoneKey(item.grupoAlimentar);
 
           if (!zoneKey) {
-            console.log("[GameScreen] item without valid zone", item);
             return null;
           }
 
@@ -273,7 +268,6 @@ export default function GameScreen() {
           } satisfies TrayFoodItem;
         }).filter((item): item is TrayFoodItem => Boolean(item));
 
-        console.log("[GameScreen] foods rendered after normalization", normalizedFoods.length);
         setFoodTray(normalizedFoods);
         setFoodsError(null);
       } catch (error) {
@@ -281,12 +275,10 @@ export default function GameScreen() {
           return;
         }
 
-        console.log("[GameScreen] failed to load foods from API", error);
         setFoodTray([]);
         setFoodsError(error instanceof Error ? error.message : "Não foi possível carregar os alimentos da API.");
       } finally {
         if (!cancelled) {
-          console.log("[GameScreen] foods loading finished");
           setFoodsLoaded(true);
         }
       }
@@ -548,19 +540,6 @@ export default function GameScreen() {
             );
           }),
         )}
-
-        {!foodsLoaded ? (
-          <Text style={[styles.helperText, { top: scaleY(310), left: scaleX(32), color: "#145FA0" }]}>Carregando alimentos...</Text>
-        ) : null}
-
-        {foodsLoaded && foodTray.length === 0 && !foodsError ? (
-          <Text style={[styles.helperText, { top: scaleY(330), left: scaleX(32), color: "#145FA0" }]}>Nenhum alimento retornado pela API.</Text>
-        ) : null}
-
-        {foodsError ? (
-          <Text style={[styles.helperText, { top: scaleY(330), left: scaleX(32), color: "#B42318" }]}>{foodsError}</Text>
-        ) : null}
-
         <Text style={[styles.helperText, { top: scaleY(318), left: scaleX(32) }]}>Arraste os alimentos para o prato</Text>
 
         <Pressable

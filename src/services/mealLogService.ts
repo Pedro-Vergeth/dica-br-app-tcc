@@ -20,6 +20,7 @@ export type MealFoodEntry = {
   quantity: number;
   unit: string;
   medidaCaseira?: string;
+  qtdMedidaCaseira?: number;
   heartQuantity: number;
   createdAt?: number;
 };
@@ -130,6 +131,7 @@ function fromRow(row: MealRecordRow): MealRecord {
             quantity: typeof candidate.quantity === "number" ? candidate.quantity : Number(candidate.quantity ?? 0),
             unit: String(candidate.unit ?? ""),
             medidaCaseira: typeof candidate.medidaCaseira === "string" && candidate.medidaCaseira ? candidate.medidaCaseira : undefined,
+            qtdMedidaCaseira: typeof candidate.qtdMedidaCaseira === "number" ? candidate.qtdMedidaCaseira : undefined,
             heartQuantity: typeof candidate.heartQuantity === "number" ? candidate.heartQuantity : Number(candidate.heartQuantity ?? 0),
             createdAt: typeof candidate.createdAt === "number" ? candidate.createdAt : undefined,
           };

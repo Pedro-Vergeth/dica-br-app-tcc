@@ -68,7 +68,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 14,
+    marginBottom: 8,
   },
   sectionHeaderTitle: {
     color: "#1C1C1C",
@@ -180,88 +180,126 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
-  suggestionGrid: {
-    flexDirection: "row",
-    gap: 14,
-    marginBottom: 26,
+  carousel: {
+    height: 96,
   },
-  suggestionCard: {
-    flex: 1,
+  carouselWrap: {
+    height: 96,
+    marginBottom: 10,
+  },
+  carouselContent: {
+    paddingRight: 8,
+    gap: 10,
+  },
+  recipeCard: {
+    width: 150,
+    height: 96,
     borderRadius: 16,
     overflow: "hidden",
-    minHeight: 156,
-    backgroundColor: "#0B7F4C",
   },
-  suggestionCardAlt: {
-    backgroundColor: "#D9E2E8",
+  recipeCardImage: {
+    width: 150,
+    height: 96,
   },
-  suggestionCardSecondary: {
-    backgroundColor: "#D9E2E8",
+  recipeCardImagePlaceholder: {
+    backgroundColor: "#C8D8E2",
   },
-  suggestionTop: {
-    flex: 1,
-    padding: 14,
-    justifyContent: "flex-end",
+  recipeCardContent: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    backgroundColor: "rgba(0,0,0,0.45)",
   },
-  suggestionLabel: {
+  recipeCardTitle: {
     color: "#FFFFFF",
-    fontSize: 16,
-    lineHeight: 20,
-    fontWeight: "800",
+    fontSize: 11,
+    lineHeight: 14,
+    fontWeight: "700",
   },
-  suggestionLabelDark: {
-    color: "#1C1C1C",
+  recipeCardMeta: {
+    color: "#E5E7EB",
+    fontSize: 9,
+    marginTop: 2,
   },
-  suggestionMeta: {
-    color: "#F2F2F2",
-    fontSize: 12,
-    marginTop: 4,
+  carouselEmpty: {
+    color: "#6B7280",
+    fontSize: 14,
+    paddingVertical: 20,
   },
   gameCard: {
     borderRadius: 18,
-    backgroundColor: "#145FA0",
-    padding: 18,
-    minHeight: 168,
+    backgroundColor: "#FFFFFF",
+    height: 168,
     overflow: "hidden",
     flexDirection: "row",
   },
-  gameCardContent: {
+  gameCardLeft: {
     flex: 1,
+    backgroundColor: "#145FA0",
+    borderTopLeftRadius: 18,
+    borderBottomLeftRadius: 18,
+    paddingLeft: 14,
+    paddingTop: 14,
+    paddingBottom: 14,
     paddingRight: 10,
+    justifyContent: "space-between",
   },
   gameCardTitle: {
     color: "#FFFFFF",
-    fontSize: 24,
-    lineHeight: 28,
+    fontSize: 18,
+    lineHeight: 20,
     fontWeight: "900",
-    marginBottom: 6,
+    letterSpacing: 0.4,
   },
   gameCardSubtitle: {
     color: "#FFFFFF",
     fontSize: 16,
-    lineHeight: 21,
+    lineHeight: 18,
     fontWeight: "700",
-    marginBottom: 16,
   },
-  gameButton: {
-    alignSelf: "flex-start",
-    backgroundColor: "#55C06B",
-    borderRadius: 12,
+  gameTitleBox: {
+    marginBottom: 4,
+  },
+  gameSubtitleBox: {
+    marginBottom: 2,
+  },
+  gameCardRight: {
+    width: 112,
+    flexDirection: "row",
+    alignItems: "stretch",
+  },
+  gamePlateWrap: {
+    width: 44,
+    height: "100%",
+    backgroundColor: "#145FA0",
+    overflow: "hidden",
+  },
+  gamePlateImage: {
+    width: "100%",
+    height: "100%",
+  },
+  gameFoodsWrap: {
+    width: 68,
+    height: "100%",
+  },
+  gameFoodsImage: {
+    width: "100%",
+    height: "100%",
+  },
+  gameButtonWrap: {
+    backgroundColor: "#01AB51",
+    borderRadius: 14,
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    alignItems: "center",
+    width: 200,
   },
   gameButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "800",
-  },
-  plateCircle: {
-    width: 92,
-    height: 92,
-    borderRadius: 46,
-    backgroundColor: "rgba(255,255,255,0.92)",
-    alignSelf: "center",
-    marginTop: 16,
   },
   statePill: {
     marginTop: 18,

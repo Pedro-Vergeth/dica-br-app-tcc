@@ -5,10 +5,11 @@ import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import BackHeader from "../../components/BackHeader";
-import type { RecipeItem } from "../../services/recipeService";
+import { fetchRecipeById, type RecipeItem } from "../../services/recipeService";
 import { styles } from "../../styles/RecipeDetailScreenStyles";
 
 type DetailParams = {
+  recipeId?: string | string[];
   recipeJson?: string | string[];
 };
 
@@ -22,6 +23,33 @@ function getParamValue(value: string | string[] | undefined) {
   }
 
   return "";
+}
+
+function readRecipe(recipeJson: string): RecipeItem | null {
+  try {
+    const normalizedJson = recipeJson.includes("%7B") || recipeJson.includes("%22") ? decodeURIComponent(recipeJson) : recipeJson;
+    const parsed = JSON.parse(normalizedJson) as Partial<RecipeItem & { dificuldade?: string; rendimento?: string }>;
+
+    if (!parsed || typeof parsed !== "object" || !parsed.id || !parsed.titulo) {
+      return null;
+    }
+
+    return {
+      id: String(parsed.id),
+      titulo: String(parsed.titulo),
+      tipoRefeicao: String(parsed.tipoRefeicao ?? ""),
+      tempoPreparoMinutos: typeof parsed.tempoPreparoMinutos === "number" ? parsed.tempoPreparoMinutos : null,
+      porcao: String(parsed.porcao ?? ""),
+      rendimento: String(parsed.rendimento ?? ""),
+      grupoAlimentar: String(parsed.grupoAlimentar ?? ""),
+      ingredientes: String(parsed.ingredientes ?? ""),
+      modoPreparo: String(parsed.modoPreparo ?? ""),
+      imagem64: String(parsed.imagem64 ?? ""),
+      estado: String(parsed.estado ?? ""),
+    };
+  } catch {
+    return null;
+  }
 }
 
 function toImageUri(imagem64: string) {
@@ -90,44 +118,57 @@ function toList(value: string) {
     .filter(Boolean);
 }
 
-function readRecipe(recipeJson: string): RecipeItem | null {
-  try {
-    const normalizedJson = recipeJson.includes("%7B") || recipeJson.includes("%22") ? decodeURIComponent(recipeJson) : recipeJson;
-    const parsed = JSON.parse(normalizedJson) as Partial<RecipeItem & { dificuldade?: string; rendimento?: string }>;
-
-    if (!parsed || typeof parsed !== "object" || !parsed.id || !parsed.titulo) {
-      return null;
-    }
-
-    return {
-      id: String(parsed.id),
-      titulo: String(parsed.titulo),
-      tipoRefeicao: String(parsed.tipoRefeicao ?? ""),
-      tempoPreparoMinutos: typeof parsed.tempoPreparoMinutos === "number" ? parsed.tempoPreparoMinutos : null,
-      porcao: String(parsed.porcao ?? ""),
-      grupoAlimentar: String(parsed.grupoAlimentar ?? ""),
-      ingredientes: String(parsed.ingredientes ?? ""),
-      modoPreparo: String(parsed.modoPreparo ?? ""),
-      imagem64: String(parsed.imagem64 ?? ""),
-      estado: String(parsed.estado ?? ""),
-    };
-  } catch {
-    return null;
-  }
-}
-
 export default function RecipeDetailScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<DetailParams>();
+  const recipeId = getParamValue(params.recipeId);
   const recipeJson = getParamValue(params.recipeJson);
-  const recipe = React.useMemo(() => readRecipe(recipeJson), [recipeJson]);
+  const [recipe, setRecipe] = React.useState<RecipeItem | null>(() => readRecipe(recipeJson));
+  const [loading, setLoading] = React.useState(Boolean(recipeId) && !recipeJson);
+
+  React.useEffect(() => {
+    let isActive = true;
+
+    if (!recipeId) {
+      setRecipe(readRecipe(recipeJson));
+      setLoading(false);
+      return () => {
+        isActive = false;
+      };
+    }
+
+    setLoading(true);
+
+    void (async () => {
+      try {
+        const data = await fetchRecipeById(recipeId);
+
+        if (isActive) {
+          setRecipe(data);
+        }
+      } catch {
+        if (isActive) {
+          setRecipe(null);
+        }
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      isActive = false;
+    };
+  }, [recipeId, recipeJson]);
+
   const imageUri = recipe?.imagem64 ? toImageUri(recipe.imagem64) : "";
   const heartColor = resolveHeartColor(recipe?.grupoAlimentar ?? "");
   const ingredientValues = recipe?.ingredientes ? toList(recipe.ingredientes) : [];
   const tempoPreparo = recipe?.tempoPreparoMinutos ? `${recipe.tempoPreparoMinutos} min` : "Não informado";
   const dificuldade = "Média";
   const porcao = recipe?.porcao || "Não informado";
-  const rendimento = "Não informado";
+  const rendimento = recipe?.rendimento || "Não informado";
 
   return (
     <View style={styles.screen}>
@@ -137,7 +178,12 @@ export default function RecipeDetailScreen() {
         <BackHeader title="Detalhes receitas" onBackPress={() => router.back()} />
 
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-          {!recipe ? (
+          {loading ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateTitle}>Carregando receita</Text>
+              <Text style={styles.emptyStateText}>Aguarde enquanto buscamos os detalhes.</Text>
+            </View>
+          ) : !recipe ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateTitle}>Receita não encontrada</Text>
               <Text style={styles.emptyStateText}>Não foi possível ler os dados da receita para abrir esta página.</Text>
