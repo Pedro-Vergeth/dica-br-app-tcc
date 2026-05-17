@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
@@ -7,6 +7,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { PieChart } from "react-native-gifted-charts";
 
 import AppHeader from "../../components/AppHeader";
+import ProfileScreen from "./ProfileScreen";
 import { loadProfileSummary, type ProfileSummary } from "../../services/profileStorage";
 import { getMealRecords, type MealRecord } from "../../services/mealLogService";
 import { styles } from "../../styles/ProfileHomeScreenStyles";
@@ -49,12 +50,15 @@ export default function ProfileHomeScreen() {
   const router = useRouter();
   const [summary, setSummary] = React.useState<ProfileSummary | null>(null);
   const [todayHearts, setTodayHearts] = React.useState({ verde: 0, azul: 0, amarelo: 0 });
+  const [profileChecked, setProfileChecked] = React.useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
       let isActive = true;
 
       const initialize = async () => {
+        setProfileChecked(false);
+
         const storedProfile = await loadProfileSummary();
 
         if (!isActive) {
@@ -62,13 +66,18 @@ export default function ProfileHomeScreen() {
         }
 
         if (!storedProfile) {
-          router.replace("/profile-setup");
+          setSummary(null);
+          setTodayHearts({ verde: 0, azul: 0, amarelo: 0 });
+          setProfileChecked(true);
           return;
         }
 
         setSummary(storedProfile);
         const mealRecords = await getMealRecords();
-        if (isActive) setTodayHearts(getTodayHearts(mealRecords));
+        if (isActive) {
+          setTodayHearts(getTodayHearts(mealRecords));
+          setProfileChecked(true);
+        }
       };
 
       void initialize();
@@ -78,6 +87,19 @@ export default function ProfileHomeScreen() {
       };
     }, [router]),
   );
+
+  if (!profileChecked) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#FFFFFF" }}>
+        <ExpoStatusBar style="dark" translucent />
+        <ActivityIndicator color="#145FA0" />
+      </View>
+    );
+  }
+
+  if (!summary) {
+    return <ProfileScreen />;
+  }
 
   const profileData = summary ?? {
     bmi: 0,

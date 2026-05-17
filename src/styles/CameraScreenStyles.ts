@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#FFFFFF",
     overflow: "hidden",
   },
   camera: {
@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(30,30,30,0.9)",
+    backgroundColor: "transparent",
   },
   header: {
     position: "absolute",
@@ -155,11 +155,7 @@ export const styles = StyleSheet.create({
     borderColor: "rgba(46,46,46,0.75)",
   },
   loadingWrap: {
-    position: "absolute",
-    left: 20,
-    right: 20,
-    top: 0,
-    bottom: 0,
+    ...StyleSheet.absoluteFillObject,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "rgba(0,0,0,0.55)",

@@ -9,39 +9,97 @@ type FoodRecognitionResponse =
       name?: string;
       alimento?: string;
       texto?: string;
+      nome?: string;
+      label?: string;
+      foodName?: string;
+      recognizedName?: string;
+      nomeAlimento?: string;
+      alimentoReconhecido?: string;
       data?: unknown;
       result?: unknown;
+      resultado?: unknown;
       message?: unknown;
     }
   | { data?: unknown };
 
-function readRecognizedName(payload: FoodRecognitionResponse): string {
+const RECOGNIZED_NAME_KEYS = [
+  "nomePrincipal",
+  "name",
+  "alimento",
+  "texto",
+  "nome",
+  "label",
+  "foodName",
+  "recognizedName",
+  "nomeAlimento",
+  "alimentoReconhecido",
+] as const;
+
+const FALLBACK_CONTAINER_KEYS = ["data", "result", "resultado", "message"] as const;
+const UNKNOWN_FOOD_SENTINEL = "ALIMENTO DESCONHECIDO";
+
+function readStringCandidate(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function isUnknownFood(value: string) {
+  return value.trim().toUpperCase() === UNKNOWN_FOOD_SENTINEL;
+}
+
+function readRecognizedName(payload: unknown, depth = 0): string {
+  if (depth > 4 || payload == null) {
+    return "";
+  }
+
   if (typeof payload === "string") {
     return payload.trim();
   }
 
-  const candidate =
-    (typeof payload === "object" && payload !== null && "nomePrincipal" in payload && typeof payload.nomePrincipal === "string" && payload.nomePrincipal) ||
-    (typeof payload === "object" && payload !== null && "name" in payload && typeof payload.name === "string" && payload.name) ||
-    (typeof payload === "object" && payload !== null && "alimento" in payload && typeof payload.alimento === "string" && payload.alimento) ||
-    (typeof payload === "object" && payload !== null && "texto" in payload && typeof payload.texto === "string" && payload.texto);
+  if (Array.isArray(payload)) {
+    for (const item of payload) {
+      const recognizedName = readRecognizedName(item, depth + 1);
 
-  if (candidate) {
-    return candidate.trim();
+      if (recognizedName) {
+        return recognizedName;
+      }
+    }
+
+    return "";
   }
 
-  const nestedData = (typeof payload === "object" && payload !== null && "data" in payload ? payload.data : undefined) as unknown;
-
-  if (typeof nestedData === "string") {
-    return nestedData.trim();
+  if (typeof payload !== "object") {
+    return "";
   }
 
-  if (nestedData && typeof nestedData === "object") {
-    const nestedCandidate = nestedData as Record<string, unknown>;
-    const nestedName = nestedCandidate.nomePrincipal ?? nestedCandidate.name ?? nestedCandidate.alimento ?? nestedCandidate.texto;
+  const record = payload as Record<string, unknown>;
 
-    if (typeof nestedName === "string") {
-      return nestedName.trim();
+  for (const key of RECOGNIZED_NAME_KEYS) {
+    const candidate = readStringCandidate(record[key]);
+
+    if (candidate) {
+      return candidate;
+    }
+  }
+
+  for (const key of FALLBACK_CONTAINER_KEYS) {
+    const nestedValue = record[key];
+
+    if (!nestedValue) {
+      continue;
+    }
+
+    const nestedCandidate = readRecognizedName(nestedValue, depth + 1);
+
+    if (nestedCandidate) {
+      return nestedCandidate;
+    }
+  }
+
+  for (const value of Object.values(record)) {
+    const nestedCandidate = readRecognizedName(value, depth + 1);
+
+    if (nestedCandidate) {
+      return nestedCandidate;
     }
   }
 
@@ -76,6 +134,10 @@ export async function recognizeFoodFromImage(imageUri: string): Promise<string> 
 
     if (!recognizedName) {
       throw new Error("Alimento não identificado");
+    }
+
+    if (isUnknownFood(recognizedName)) {
+      throw new Error("Alimento desconhecido");
     }
 
     return recognizedName;

@@ -88,7 +88,13 @@ export default function StateSelectionScreen() {
             <View style={styles.header}>
               <Text style={styles.title}>{bemVindo}</Text>
               <Text style={styles.subtitle}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                A Alimentação Cardioprotetora Brasileira (DICA) é baseada em alimentos típicos do Brasil e promove a saúde do coração.
+              </Text>
+              <Text style={styles.subtitle}>
+                Este aplicativo ajuda você a colocá-la em prática de forma simples e acessível.
+              </Text>
+              <Text style={styles.subtitle}>
+                “Cuidando do coração, com o sabor do Brasil.”
               </Text>
             </View>
 

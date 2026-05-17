@@ -82,6 +82,7 @@ export default function SearchScreen() {
   const [loading, setLoading] = React.useState(false);
   const [searched, setSearched] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const hydratedRouteQueryRef = React.useRef<string | null>(null);
   const redGroupItem = React.useMemo(() => {
     const normalizedQuery = normalizeSearchText(query);
 
@@ -102,11 +103,13 @@ export default function SearchScreen() {
 
   React.useEffect(() => {
     const routeQuery = Array.isArray(params.query) ? params.query[0] : params.query;
+    const normalizedRouteQuery = typeof routeQuery === "string" ? routeQuery.trim() : "";
 
-    if (typeof routeQuery === "string" && routeQuery.trim() && routeQuery !== query) {
-      setQuery(routeQuery);
+    if (normalizedRouteQuery && hydratedRouteQueryRef.current !== normalizedRouteQuery) {
+      hydratedRouteQueryRef.current = normalizedRouteQuery;
+      setQuery(normalizedRouteQuery);
     }
-  }, [params.query, query]);
+  }, [params.query]);
 
   const runSearch = React.useCallback(async (searchValue: string) => {
     const normalizedSearch = searchValue.trim();
@@ -149,9 +152,6 @@ export default function SearchScreen() {
       setError(null);
       return;
     }
-
-    setLoading(true);
-    setSearched(true);
 
     const timeoutId = setTimeout(() => {
       void runSearch(normalizedQuery);

@@ -5,6 +5,7 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 
 import BackHeader from "../../components/BackHeader";
 import { recognizeFoodFromImage } from "../../services/foodRecognitionService";
@@ -17,13 +18,44 @@ export default function CameraScreen() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
+  React.useEffect(() => {
+    if (!error) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      setError(null);
+    }, 4000);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [error]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setLoading(false);
+      setError(null);
+
+      return () => {
+        setLoading(false);
+        setError(null);
+      };
+    }, []),
+  );
+
   const analyzeImage = React.useCallback(
     async (imageUri: string) => {
       const recognizedName = await recognizeFoodFromImage(imageUri);
+      const normalizedName = recognizedName.trim();
+
+      if (!normalizedName) {
+        throw new Error("Alimento não identificado");
+      }
 
       router.replace({
-        pathname: "/search",
-        params: { query: recognizedName },
+        pathname: "/(tabs)/search",
+        params: { query: normalizedName },
       });
     },
     [router],
@@ -46,7 +78,8 @@ export default function CameraScreen() {
 
       await analyzeImage(photo.uri);
     } catch (captureError) {
-      setError(captureError instanceof Error ? captureError.message : "Alimento não identificado");
+      const message = captureError instanceof Error ? captureError.message : "Alimento não identificado";
+      setError(message === "Alimento desconhecido" ? "Alimento não identificado" : message);
       setLoading(false);
     }
   }, [analyzeImage, loading]);
@@ -78,7 +111,8 @@ export default function CameraScreen() {
       setLoading(true);
       await analyzeImage(result.assets[0].uri);
     } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : "Não foi possível selecionar a imagem.");
+      const message = uploadError instanceof Error ? uploadError.message : "Não foi possível selecionar a imagem.";
+      setError(message === "Alimento desconhecido" ? "Alimento não identificado" : message);
       setLoading(false);
     }
   }, [analyzeImage, loading]);

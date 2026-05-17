@@ -224,9 +224,9 @@ export default function SearchDetailScreen() {
                   </Text>
                   <Text style={styles.valueUnit}>{portionUnit ?? ""}</Text>
                   <Text style={styles.valueNumber}>
-                    {measureQty != null ? String(measureQty) : "—"}
+                    ({measureQty != null ? String(measureQty) : "—"}
                   </Text>
-                  <Text style={styles.valueUnit}>{measureUnit ? `(${measureUnit})` : ""}</Text>
+                  <Text style={styles.valueUnit}>{measureUnit ? `${measureUnit})` : ""}</Text>
                 </View>
               </View>
 
