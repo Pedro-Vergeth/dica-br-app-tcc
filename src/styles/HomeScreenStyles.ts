@@ -324,4 +324,21 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 2,
   },
+  scrollContent: {
+    paddingBottom: 20,
+  },
+  creditsButton: {
+    alignSelf: "center",
+    marginTop: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#D7E3EB",
+  },
+  creditsButtonText: {
+    color: "#6B7280",
+    fontSize: 13,
+    fontWeight: "600",
+  },
 });

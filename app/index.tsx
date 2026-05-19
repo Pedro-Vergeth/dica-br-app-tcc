@@ -1,29 +1,5 @@
-import { useEffect } from "react";
-import { useRouter } from "expo-router";
-
-import LoadingScreen from "../src/screens/common/LoadingScreen";
-import { getInitialRoute } from "../src/services/onboardingStorage";
+import { Redirect } from "expo-router";
 
 export default function Index() {
-  const router = useRouter();
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const resolveInitialRoute = async () => {
-      const initialRoute = await getInitialRoute();
-
-      if (isMounted) {
-        router.replace(initialRoute);
-      }
-    };
-
-    void resolveInitialRoute();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [router]);
-
-  return <LoadingScreen />;
+  return <Redirect href="/intro-animation" />;
 }
