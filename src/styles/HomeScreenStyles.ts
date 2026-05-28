@@ -325,11 +325,15 @@ export const styles = StyleSheet.create({
     marginTop: 2,
   },
   scrollContent: {
+    flexGrow: 1,
     paddingBottom: 20,
+  },
+  scrollBody: {
+    flex: 1,
   },
   creditsButton: {
     alignSelf: "center",
-    marginTop: 20,
+    marginTop: "auto",
     paddingVertical: 10,
     paddingHorizontal: 24,
     borderRadius: 20,
